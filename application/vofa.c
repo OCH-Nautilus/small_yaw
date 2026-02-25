@@ -43,7 +43,7 @@ void StartVOFATask(void const * argument)
 		//Vofa_Send_Data8(small_yaw._torq,VisionToGimbal.yaw_acc.d,VisionToGimbal.yaw_vel.d,0,0,0,0,0);
 		//Vofa_Send_Data8(TRIGGER.if_back_flag,TRIGGER.back_over_flag,TRIGGER.err_cnt,TRIGGER.once_target_ecd,0,0,0,0);
 		//Vofa_Send_Data8(Vision_Rx.yaw,INS.Yaw,Vision_Rx.v_yaw,Vision_Rx.enable_yaw_diff,Vision_Rx.appear,IF_FIRE(),IF_DISCERN(),mode.trigger_state);
-		Vofa_Send_Data8(Vision_Rx.yaw,INS.Yaw,Vision_Rx.v_yaw,pid_yaw_vision_armor_angle.out+yaw_vision_forward.output,pid_yaw_vision_armor_angle.out,INS.Gyro[2],GIMBAL.output_yaw,Vision_Rx.a_yaw);
+		Vofa_Send_Data8(Vision_Rx.yaw,INS.Yaw,Vision_Rx.a_yaw,pid_yaw_vision_armor_angle.out+yaw_vision_forward.output,pid_yaw_vision_armor_angle.out,INS.Gyro[2],GIMBAL.output_yaw,Vision_Rx.enable_yaw_diff);
 		vTaskDelay(10);
   }
 }
