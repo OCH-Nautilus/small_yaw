@@ -96,6 +96,9 @@ typedef struct  {
     
     float v_yaw;               // yaw角速度
     float v_pitch;             // pitch角速度
+	
+		float a_yaw;   // yaw 方向角加速度（度/s^2），发给电控
+    float a_pitch; // pitch 方向角加速度（度/s^2），发给电控
     uint8_t detect_color;      // 敌方颜色
 } __attribute__((packed)) ReceiveAimINFO;//视觉发送过来的
 

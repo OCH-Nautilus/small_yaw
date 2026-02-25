@@ -214,6 +214,8 @@ void receive_vision(uint8_t *buff)
 	vision_data_float enable_pitch_diff;
 	vision_data_float yaw_vel;
 	vision_data_float pitch_vel;
+	vision_data_float yaw_acc;
+	vision_data_float pitch_acc;
 	if(buff[0]==0x01)
 	{
 		
@@ -227,7 +229,9 @@ void receive_vision(uint8_t *buff)
 			enable_yaw_diff.data[i]=buff[i+23];
 			enable_pitch_diff.data[i]=buff[i+27];
 			yaw_vel.data[i]=buff[i+31];
-			pitch_vel.data[i]=buff[i+35];			
+			pitch_vel.data[i]=buff[i+35];
+			yaw_acc.data[i]=buff[i+39];
+			pitch_acc.data[i]=buff[i+43];
 		}
 		
 		Vision_Rx.time_stamp=time_stamp.d;
@@ -239,9 +243,11 @@ void receive_vision(uint8_t *buff)
 		Vision_Rx.enable_pitch_diff=enable_pitch_diff.d;
 		Vision_Rx.v_yaw=yaw_vel.d;
 		Vision_Rx.v_pitch=pitch_vel.d;
+		Vision_Rx.a_yaw=yaw_acc.d;
+		Vision_Rx.a_pitch=pitch_acc.d;
 		Vision_Rx.appear=buff[5];
 		Vision_Rx.shoot_rate=buff[6];
-		Vision_Rx.detect_color=buff[39];
+		Vision_Rx.detect_color=buff[47];
 		
 		if(Vision_Rx.appear)
 		{

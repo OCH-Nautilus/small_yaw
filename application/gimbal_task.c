@@ -213,8 +213,9 @@ void gimbal_pid_calc()
             GIMBAL.output_pitch = PID_calc(&pid_pitch_vision_armor_speed, INS.Gyro[1], pid_pitch_vision_armor_angle.out);
             
             yaw_error = shortestAngleDiff(INS.Yaw, GIMBAL.yaw_target);
-            temp_angle_pid=PID_calc(&pid_yaw_vision_armor_angle, 0, yaw_error);//+ feedforward_control_calc(&yaw_vision_forward,VisionToGimbal.yaw_vel.d);////GIMBAL.yaw_target
-            GIMBAL.output_yaw = PID_calc(&pid_yaw_vision_armor_speed, INS.Gyro[2], temp_angle_pid);//+feedforward_control_calc(&yaw_vision_speed_forward,VisionToGimbal.yaw_acc.d);////pid_yaw_vision_armor_angle.out
+            PID_calc(&pid_yaw_vision_armor_angle, 0, yaw_error);
+						////GIMBAL.yaw_target
+            GIMBAL.output_yaw = PID_calc(&pid_yaw_vision_armor_speed, INS.Gyro[2], pid_yaw_vision_armor_angle.out+feedforward_control_calc(&yaw_vision_forward,Vision_Rx.v_yaw))+feedforward_control_calc(&yaw_vision_speed_forward,Vision_Rx.a_yaw);////pid_yaw_vision_armor_angle.out
 //							Modeling_Parameters_yaw.target_vel=	PID_calc(&pid_yaw_angle_Recognition, 0, yaw_error)+feedforward_control_calc(&yaw_vision_forward,VisionToGimbal.yaw_vel.d);
 //							Modeling_Parameters_yaw.target_acc=PID_calc(&pid_yaw_speed_Recognition, INS.Gyro[2], pid_yaw_angle_Recognition.out);
 //							GIMBAL.output_yaw=Modeling_Parameters_cacl(Modeling_Parameters_yaw);    

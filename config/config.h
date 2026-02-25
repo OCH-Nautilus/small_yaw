@@ -144,14 +144,14 @@
 
 //装甲板
 #define PID_YAW_VISION_ARMOR_ANGLE_MODE 0
-#define PID_YAW_VISION_ARMOR_ANGLE_KP 0.65f//0.5
-#define PID_YAW_VISION_ARMOR_ANGLE_KI 0.001f
+#define PID_YAW_VISION_ARMOR_ANGLE_KP 0.5f//0.5
+#define PID_YAW_VISION_ARMOR_ANGLE_KI 0.00f
 #define PID_YAW_VISION_ARMOR_ANGLE_KD 0
-#define PID_YAW_VISION_ARMOR_ANGLE_IMAX_OUT 0.01f
+#define PID_YAW_VISION_ARMOR_ANGLE_IMAX_OUT 0.0f
 #define PID_YAW_VISION_ARMOR_ANGLE_MAX_OUT 5.0f
 
 #define PID_YAW_VISION_ARMOR_SPEED_MODE 0
-#define PID_YAW_VISION_ARMOR_SPEED_KP 0.7f
+#define PID_YAW_VISION_ARMOR_SPEED_KP 0.6f
 #define PID_YAW_VISION_ARMOR_SPEED_KI 0.001f
 #define PID_YAW_VISION_ARMOR_SPEED_KD 0
 #define PID_YAW_VISION_ARMOR_SPEED_IMAX_OUT 0.0f
@@ -217,18 +217,18 @@
 
 
 //视觉yaw前馈（装甲板）（速度）
-#define VISION_YAW_ALPHA 2.0f//2.0
+#define VISION_YAW_ALPHA 0.02f//2.0
 #define VISION_YAW_BELTA 0.0f
-#define VISION_YAW_OUTMAX   0.7f  //   0.7f      
+#define VISION_YAW_OUTMAX   0.5f  //   0.7f      
 //视觉pitch前馈（装甲板）
 #define VISION_PITCH_ALPHA 2.0f
 #define VISION_PITCH_BELTA 0.0f
 #define VISION_PITCH_OUTMAX    5     //      15.0f
 
 //视觉yaw前馈（装甲板）（加速度）
-#define VISION_YAW_SPEED_ALPHA 0.02f//0.02f
+#define VISION_YAW_SPEED_ALPHA 0.0015f//0.02f
 #define VISION_YAW_SPEED_BELTA 0.0f
-#define VISION_YAW_SPEED_OUTMAX   0.6f //0.6      
+#define VISION_YAW_SPEED_OUTMAX   0.4f //0.6      
 
 
 //视觉yaw前馈（符）
