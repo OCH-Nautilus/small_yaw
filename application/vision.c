@@ -174,7 +174,7 @@ void tx_handle(SendRobotCmdData *data)
 	data->bullet_speed=25;
 	data->controller_delay=0;
 	data->manual_reset_count=0;
-	data->detect_color=0;
+	data->detect_color=1;
 	
 
 }
@@ -264,6 +264,12 @@ void receive_vision(uint8_t *buff)
 		  vision_cnt++;
 		else
 			vision_cnt=0;
+		
+		if(vision_cnt>500)
+			GIMBAL.vision_block = 1;
+		else
+			GIMBAL.vision_block = 0;
+		
 	}
 }
 
@@ -280,7 +286,7 @@ bool IF_DISCERN(void)
 //ÊÇ·ñ¿ª»ð
 bool IF_FIRE(void)
 {
-	if(fabs(INS.Yaw-Vision_Rx.yaw)<Vision_Rx.enable_yaw_diff&&fabs(INS.Pitch-Vision_Rx.pitch)<Vision_Rx.enable_pitch_diff)
+	if(fabs(INS.Yaw-Vision_Rx.yaw)<(Vision_Rx.enable_yaw_diff/2.0f)&&fabs(INS.Pitch-Vision_Rx.pitch)<Vision_Rx.enable_pitch_diff)
 		return 1;
 	else
 		return 0;

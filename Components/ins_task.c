@@ -94,7 +94,7 @@ void INS_Init(void)
     HAL_TIM_PWM_Start(&htim10, TIM_CHANNEL_1);
 
     INS.AccelLPF = 0.0085;
-	KalmanCreate(&test_accle,0.5,11);
+	KalmanCreate(&test_accle,0.01,11);
 }
 float wwww=0;
 void INS_Task(void)

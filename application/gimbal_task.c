@@ -13,6 +13,7 @@
 #include "kalman.h"
 GIMBAL_t GIMBAL;
 Modeling_Parameters_t Modeling_Parameters_yaw;
+extern float accel_kalman,angel_accle;//差分获得的角加速度
 
 first_order_filter_type_t pitch_lowpass_key, yaw_lowpass_key;
 
@@ -87,10 +88,10 @@ void gimbal_task(void const * argument)
 void gimbal_init()
 {
     	//系统辨识参数
-	Modeling_Parameters_yaw.Inertia=0.0318f;
-	Modeling_Parameters_yaw.Viscosity_coefficient=0.1318f;
+	Modeling_Parameters_yaw.Inertia=0.0401f;
+	Modeling_Parameters_yaw.Viscosity_coefficient=0.1656f;
 	Modeling_Parameters_yaw.Gravity=0;
-	Modeling_Parameters_yaw.F_Coulomb=0.0655f;
+	Modeling_Parameters_yaw.F_Coulomb=0.0727f;
 	
 	mode.gimbal_state=GIMBAL_IDLE;
 	GIMBAL.PT_flag = 0;
@@ -214,9 +215,8 @@ void gimbal_pid_calc()
             
             yaw_error = shortestAngleDiff(INS.Yaw, GIMBAL.yaw_target);
             PID_calc(&pid_yaw_vision_armor_angle, 0, yaw_error);
-						////GIMBAL.yaw_target
             GIMBAL.output_yaw = PID_calc(&pid_yaw_vision_armor_speed, INS.Gyro[2], pid_yaw_vision_armor_angle.out+feedforward_control_calc(&yaw_vision_forward,Vision_Rx.v_yaw))+feedforward_control_calc(&yaw_vision_speed_forward,Vision_Rx.a_yaw);////pid_yaw_vision_armor_angle.out
-//							Modeling_Parameters_yaw.target_vel=	PID_calc(&pid_yaw_angle_Recognition, 0, yaw_error)+feedforward_control_calc(&yaw_vision_forward,VisionToGimbal.yaw_vel.d);
+//							Modeling_Parameters_yaw.target_vel=	PID_calc(&pid_yaw_angle_Recognition, 0, yaw_error);
 //							Modeling_Parameters_yaw.target_acc=PID_calc(&pid_yaw_speed_Recognition, INS.Gyro[2], pid_yaw_angle_Recognition.out);
 //							GIMBAL.output_yaw=Modeling_Parameters_cacl(Modeling_Parameters_yaw);    
 				
