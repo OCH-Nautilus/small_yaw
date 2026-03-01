@@ -244,8 +244,8 @@ void vision_rc_ctrl()
 	{
 		if (rc_ctrl.rc.s[0] == 3)
 			mode.vision_switch_state = VISION_SMALL_BUFF;
-//		else if (rc_ctrl.rc.s_l == 1)
-//			mode.vision_switch_state = VISION_BIG_BUFF;
+		else if (rc_ctrl.rc.s[0] == 1)
+			mode.vision_switch_state = VISION_BIG_BUFF;
 		else if (rc_ctrl.rc.s[0] == 2)
 			mode.vision_switch_state = VISION_ARMOR;
 	}
@@ -320,9 +320,13 @@ void tirgger_rc_ctrl()
 		
 		if (mode.gimbal_state == GIMBAL_VISION&&mode.shoot_state==SHOOT_OPEN&&TRIGGER.back_over_flag)
 		{
-			if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&IF_FIRE())//Œ‰ø∆
+			if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&IF_FIRE()&&mode.vision_switch_state==VISION_ARMOR)//Œ‰ø∆
 			{
 				mode.trigger_state = TRIGGER_LONG;
+			}
+			else if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&(mode.vision_switch_state==VISION_SMALL_BUFF||mode.vision_switch_state==VISION_BIG_BUFF)&&rc_ctrl.rc.WHEEL_State == DOWN_SHORT)
+			{
+				mode.trigger_state = TRIGGER_SINGLE;
 			}
 			else 
 				mode.trigger_state =TRIGGER_IDLE;

@@ -161,7 +161,7 @@ void tx_handle(SendRobotCmdData *data)
 {
 	data->cmd_ID=0x02;
 	data->time_stamp=HAL_GetTick();
-	data->yaw=INS.Yaw*0.01745f;
+	data->yaw=INS.Yaw*0.01745f;//*0.01745f
 	data->pitch=INS.Pitch*0.01745f;
 	data->roll=INS.Roll*0.01745f;
 	data->ins_sum=0;
@@ -247,7 +247,7 @@ void receive_vision(uint8_t *buff)
 		Vision_Rx.a_pitch=pitch_acc.d;
 		Vision_Rx.appear=buff[5];
 		Vision_Rx.shoot_rate=buff[6];
-		Vision_Rx.detect_color=buff[47];
+		Vision_Rx.detect_color=buff[39];
 		
 		if(Vision_Rx.appear)
 		{
