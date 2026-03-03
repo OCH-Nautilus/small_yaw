@@ -109,35 +109,6 @@ void USART_Data_Handle(USART_TX_data_t *data)
 
 
 
-//void USART_Data_Handle(USART_TX_data_t *data)
-//{
-//		if (data == NULL)
-//    {
-//        return;
-//    }
-//	bbb++;
-//		data->head = USART_TX_HAED;
-//		data->controls_mode=mode.controls_state;
-//		data->gimbal_mode=mode.gimbal_state;
-//		data->vision_mode=mode.vision_switch_state;
-//		data->shoot_mode=mode.shoot_state;
-//		data->trigger_mode=mode.trigger_state;
-//		data->chassis_mode=mode.chassis_state;
-//		data->chassis_speed_mode=mode.chassis_speed_state;
-//		data->rc_ctrl_r_x=rc_ctrl.rc.ch[0];
-//		data->rc_ctrl_r_y=rc_ctrl.rc.ch[1];
-//		data->rc_ctrl_l_x=rc_ctrl.rc.ch[2];
-//		data->rc_ctrl_l_y=rc_ctrl.rc.ch[3];
-//		data->small_yaw_pos=small_yaw._pos;
-//		data->yaw=INS.Yaw;
-//		data->mouse_vx=rc_ctrl.mouse.vx;
-//		data->mouse_vy=rc_ctrl.mouse.vy;
-//		data->Key_W=rc_ctrl.keyboard.key_W;
-//		data->Key_S=rc_ctrl.keyboard.key_S;
-//		data->Key_A=rc_ctrl.keyboard.key_A;
-//		data->Key_D=rc_ctrl.keyboard.key_D;
-//    data->tail = USART_TX_END;
-//}
 
 /**
   * @Name    USART_Data_Send
@@ -173,39 +144,7 @@ void USART_Data_Send(USART_TX_data_t *data, uint8_t *buff)
     HAL_UART_Transmit_DMA(&huart1, buff, USART_DATA_COUNT);
 }
 
-//HAL_StatusTypeDef transmit_status=1;
-//void USART_Data_Send( USART_TX_data_t *data , uint8_t *buff)
-//{
-//	  if (data == NULL)
-//    {
-//        return;
-//    }
-//		
-//		USART_Data_Handle(data);
-//		
-//	  memcpy( buff,  &data->head,1 );
-//		memcpy( buff+1, &data->controls_mode , 1 );
-//		memcpy( buff+2, &data->gimbal_mode , 1 );
-//		memcpy( buff+3, &data->vision_mode , 1 );
-//		memcpy( buff+4, &data->shoot_mode , 1 );
-//		memcpy( buff+5, &data->trigger_mode , 1 );
-//		memcpy( buff+6, &data->chassis_mode , 1 );
-//		memcpy( buff+7, &data->chassis_speed_mode , 1 );
-//		memcpy( buff+8, &data->rc_ctrl_r_x , 4 );
-//		memcpy( buff+12, &data->rc_ctrl_r_y , 4 );
-//		memcpy( buff+16, &data->rc_ctrl_l_x , 4 );
-//		memcpy( buff+20, &data->rc_ctrl_l_y , 4 );
-//		memcpy( buff+24, &data->small_yaw_pos , 4 );
-//		memcpy( buff+28, &data->yaw , 4 );
-//		memcpy( buff+32, &data->mouse_vx , 4 );
-//		memcpy( buff+36, &data->mouse_vy , 4 );
-//		memcpy( buff+40, &data->Key_W , 1 );
-//		memcpy( buff+41, &data->Key_S , 1 );
-//		memcpy( buff+42, &data->Key_A , 1 );
-//		memcpy( buff+43, &data->Key_D , 1 );
-//	  memcpy( buff+44, &data->tail , 1 );
-//		transmit_status=HAL_UART_Transmit_DMA(&huart1,buff,USART_DATA_COUNT);
-//}
+
 
 /**
   * @Name    Head1_data_Handle
@@ -222,13 +161,24 @@ void Head1_data_Handle(uint8_t *buff,USART_Rx_data_t *data)
 		Algorithm_fp32_u initial_speed;
 		Algorithm_fp32_u ins_big_yaw;
 		Algorithm_fp32_u big_yaw_target;
-		
+		Algorithm_int16_u shooter_barrel_heat_limit;
+		Algorithm_int16_u shooter_barrel_cooling_value;
+		Algorithm_int16_u shooter_17mm_1_barrel_heat;
+		Algorithm_int16_u chassis_power_limit;
+		Algorithm_fp32_u real_power;
+		Algorithm_int16_u buffer_energy;
 		for(int i=0;i<4;i++)
 		{
 			diff_angle.d[i]=buff[i+1];
 			initial_speed.d[i]=buff[i+7];
 			ins_big_yaw.d[i]=buff[i+11];
 			big_yaw_target.d[i]=buff[i+15];
+			shooter_barrel_heat_limit.d[i]=buff[i+19];
+			shooter_barrel_cooling_value.d[i]=buff[i+23];
+			shooter_17mm_1_barrel_heat.d[i]=buff[i+27];
+			chassis_power_limit.d[i]=buff[i+31];
+			real_power.d[i]=buff[i+35];
+			buffer_energy.d[i]=buff[i+39];
 		}
 		data->chassis_diff_angle=diff_angle.data;
 		data->trigger_back_over_flag=buff[5];
@@ -236,6 +186,12 @@ void Head1_data_Handle(uint8_t *buff,USART_Rx_data_t *data)
 		data->initial_speed=initial_speed.data;
 		data->ins_big_yaw=ins_big_yaw.data;
 		data->big_yaw_target=big_yaw_target.data;
+		data->shooter_17mm_1_barrel_heat=shooter_17mm_1_barrel_heat.data;
+		data->shooter_barrel_heat_limit=shooter_barrel_heat_limit.data;
+		data->shooter_barrel_cooling_value=shooter_barrel_cooling_value.data;
+		data->chassis_power_limit=chassis_power_limit.data;
+		data->real_power=real_power.data;
+		data->buffer_energy=buffer_energy.data;
 	}
 
 }

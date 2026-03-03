@@ -69,3 +69,5 @@ gimbal\vofa.o: ../Components/ins_task.h
 gimbal\vofa.o: ..\application\vision.h
 gimbal\vofa.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\vofa.o: ..\application\trigger_task.h
+gimbal\vofa.o: ../Bsp/bsp_transmit.h
+gimbal\vofa.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h

@@ -8,9 +8,9 @@
 #define RECIVE_TASK_INIT_TIME 10
 #define RECIVE_TASK_TIME_MS   1
 
-#define DATA_COUNT_RX	50
+#define DATA_COUNT_RX	160
 #define DATA_COUNT_TX	82
-#define DATA_COUNT	20//接收字节数
+#define DATA_COUNT	44//接收字节数
 
 #define USART_RX_HAED   0XA5
 #define USART_RX_END    0XAA
@@ -30,33 +30,16 @@ typedef struct
 	float initial_speed;
 	float ins_big_yaw;//大yaw陀螺仪值
 	float big_yaw_target;
+	uint16_t shooter_barrel_heat_limit;
+	uint16_t shooter_barrel_cooling_value;
+	uint16_t shooter_17mm_1_barrel_heat; 
+	uint16_t chassis_power_limit;
+	float real_power;
+	uint16_t buffer_energy;
 	uint8_t tail;
 }USART_Rx_data_t;
 
-//typedef struct
-//{
-//	uint8_t head;
-//	uint8_t controls_mode;
-//	uint8_t gimbal_mode;
-//	uint8_t vision_mode;
-//	uint8_t shoot_mode;
-//	uint8_t trigger_mode;
-//	uint8_t chassis_mode;
-//  uint8_t chassis_speed_mode;
-//	int16_t rc_ctrl_r_x;
-//  int16_t rc_ctrl_r_y;
-//	int16_t rc_ctrl_l_x;
-//  int16_t rc_ctrl_l_y;
-//	float small_yaw_pos;
-//	float yaw;
-//	float mouse_vx;
-//	float mouse_vy;
-//	uint8_t Key_W;
-//	uint8_t Key_S;
-//	uint8_t Key_A;
-//	uint8_t Key_D;
-//	uint8_t tail;
-//}USART_TX_data_t;
+
 
 #pragma pack(push, 1)
 typedef struct
