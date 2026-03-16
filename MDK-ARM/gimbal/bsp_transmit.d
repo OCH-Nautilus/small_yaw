@@ -75,3 +75,6 @@ gimbal\bsp_transmit.o: ..\Bsp\remote_control.h
 gimbal\bsp_transmit.o: ..\Bsp\bsp_rc.h
 gimbal\bsp_transmit.o: ../application/gimbal_task.h
 gimbal\bsp_transmit.o: ../Bsp/pid.h
+gimbal\bsp_transmit.o: ../application/vision.h
+gimbal\bsp_transmit.o: ../application/shoot_task.h
+gimbal\bsp_transmit.o: ../application/trigger_task.h

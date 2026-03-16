@@ -8,6 +8,9 @@
 #include "gimbal_task.h"
 #include "shoot_task.h"
 #include "trigger_task.h"
+#include "bsp_transmit.h"
+#include "ins_task.h"
+#include "math.h"
 int time=0;
 void send_current_task(void const * argument)
 {
@@ -18,24 +21,33 @@ void send_current_task(void const * argument)
   {
 		enable_disable_DM4310();
 		
-#ifdef GIMBAL_YAW_SENT
-		yaw_ctrl_current();
-#else
-		Error_Yaw();
-#endif
-#ifdef GIMBAL_PITCH_SENT
-		pitch_ctrl_current();
-#else
-		Error_Pitch();
-#endif
-		vTaskDelay(1);
-		
-#ifdef SHOOT_SEND
-		shoot_ctrl_current();
-#else
-		Error_Shoot();
-#endif
-		
+		if(communication_state==UART_COMMUNICATION_NORMAL)		
+		{
+			#ifdef GIMBAL_YAW_SENT
+				yaw_ctrl_current();
+			#else
+					Error_Yaw();
+			#endif
+			#ifdef GIMBAL_PITCH_SENT
+					pitch_ctrl_current();
+			#else
+					Error_Pitch();
+			#endif
+					vTaskDelay(1);
+					
+			#ifdef SHOOT_SEND
+					shoot_ctrl_current();
+			#else
+					Error_Shoot();
+			#endif
+		}
+		else
+		{
+			Error_Yaw();
+			Error_Pitch();
+			Error_Shoot();
+		}
+			
 		vTaskDelay(1);
   }
   /* USER CODE END current_task */
@@ -79,7 +91,7 @@ void pitch_ctrl_current()
 
 	if (mode.gimbal_state != GIMBAL_IDLE)
 	{
-		ctrl_motor(&hcan1, 0x04, 0, 0, 0, 0, GIMBAL.output_pitch); 
+		ctrl_motor(&hcan1, 0x04, 0, 0, 0, 0,  GIMBAL.output_pitch);//
 			DM_position_ctrl(&hcan1,0x103,GIMBAL.big_pitch_target,10);
 	}		
 	else
@@ -88,7 +100,8 @@ void pitch_ctrl_current()
 		DM_position_ctrl(&hcan1,0x103,GIMBAL.big_pitch_target,0);
 	}	
 	
-	
+	if(rc_ctrl.keyboard.key_Q==1)
+		damiao_clear(&hcan1,0x103);
 
 }
 

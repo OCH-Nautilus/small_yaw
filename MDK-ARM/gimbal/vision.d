@@ -79,4 +79,6 @@ gimbal\vision.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.
 gimbal\vision.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
 gimbal\vision.o: ../Bsp/bsp_dwt.h
 gimbal\vision.o: ../Bsp/CRC8_CRC16.h
+gimbal\vision.o: ../Bsp/bsp_transmit.h
+gimbal\vision.o: ../Inc/usart.h
 gimbal\vision.o: ../config/config.h

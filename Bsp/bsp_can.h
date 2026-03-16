@@ -25,5 +25,6 @@ void damiao_record(CAN_HandleTypeDef* hcan,uint16_t id);
 void set_motor_current( CAN_HandleTypeDef *hcan,uint32_t id_range, int16_t v1, int16_t v2, int16_t v3, int16_t v4 );
 void ctrl_motor(CAN_HandleTypeDef* hcan,uint16_t id, float _pos, float _vel,float _KP, float _KD, float _torq);//_pos位置 _vel速度 _torq转距
  void DM_position_ctrl( CAN_HandleTypeDef* hcan,uint16_t id, float _pos, float _vel);
+void damiao_clear(CAN_HandleTypeDef* hcan,uint16_t id);
 
 #endif

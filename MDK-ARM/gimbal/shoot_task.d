@@ -59,3 +59,8 @@ gimbal\shoot_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 gimbal\shoot_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 gimbal\shoot_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 gimbal\shoot_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
+gimbal\shoot_task.o: ../Bsp/bsp_transmit.h
+gimbal\shoot_task.o: ../Inc/usart.h
+gimbal\shoot_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+gimbal\shoot_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+gimbal\shoot_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

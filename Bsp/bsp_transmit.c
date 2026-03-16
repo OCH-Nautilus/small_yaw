@@ -7,11 +7,15 @@
 #include "mode_task.h"
 #include "remote_control.h"
 #include "gimbal_task.h"
+#include "vision.h"
+#include "shoot_task.h"
+#include "trigger_task.h"
 USART_Rx_data_t USART_Rx_data;
 USART_TX_data_t  USART_TX_data;
 
 uint8_t USART_Rx_data_handle[DATA_COUNT];
 uint8_t USART_Tx_buff[USART_DATA_COUNT] = {0};
+communication_state_e communication_state;
 
 /**
   * @Name    Transmit_Data_Task
@@ -23,6 +27,7 @@ int j=0;
 void Transmit_Data_Task(void const *pvParameters)
 {
 	vTaskDelay(RECIVE_TASK_INIT_TIME);
+	communication_state=UART_COMMUNICATION_NORMAL;
 	
 	USART_Data_init(&USART_TX_data);
 	for(;;)
@@ -100,9 +105,17 @@ void USART_Data_Handle(USART_TX_data_t *data)
     data->key.bits.Key_Shift = rc_ctrl.keyboard.key_Shift ? 1 : 0;
 		data->key.bits.Key_Flag_E = rc_ctrl.keyboard.flag_E ? 1 : 0;
 		data->key.bits.Key_E = rc_ctrl.keyboard.key_E ? 1 : 0;
-		
+		data->key.bits.Key_G=	rc_ctrl.keyboard.key_G ? 1 : 0;
 		data->rc_ctrl_s.bits.s_l=rc_ctrl.rc.s[0];
 		data->rc_ctrl_s.bits.s_r=rc_ctrl.rc.s[1];
+		// 设置通信时长
+		data->Communication_count=HAL_GetTick();
+		//设置标志位
+		data->flag.bits.IF_DISCERN=IF_DISCERN();
+		data->flag.bits.shoot_l=shoot_l_detect();
+		data->flag.bits.shoot_r=shoot_r_detect();
+		data->flag.bits.stuck_state=stuck_state;
+		data->flag.bits.down_over_flag=GIMBAL.down_over;
     // 设置帧尾
     data->tail = USART_TX_END;
 }
@@ -138,7 +151,9 @@ void USART_Data_Send(USART_TX_data_t *data, uint8_t *buff)
     memcpy(buff + 23, &data->mouse_vy, 4);
     memcpy(buff + 27, &data->key.key_pack, 1);
 		memcpy(buff + 28, &data->rc_ctrl_s.rc_s_pack, 1);
-    memcpy(buff + 29, &data->tail, 1);
+		memcpy(buff + 29, &data->Communication_count, 4);
+		memcpy(buff + 33, &data->flag.flag_pack, 2);
+    memcpy(buff + 35, &data->tail, 1);
 		
 		
     HAL_UART_Transmit_DMA(&huart1, buff, USART_DATA_COUNT);
@@ -155,6 +170,9 @@ void USART_Data_Send(USART_TX_data_t *data, uint8_t *buff)
 int asss=0;
 void Head1_data_Handle(uint8_t *buff,USART_Rx_data_t *data)
 {
+	
+	static uint32_t last_Communication_count=0;
+	static uint16_t err_cnt=0;
 	if(buff[0] == USART_RX_HAED && buff[DATA_COUNT-1] == USART_RX_END)
 	{asss++;
 		Algorithm_fp32_u diff_angle;
@@ -167,18 +185,47 @@ void Head1_data_Handle(uint8_t *buff,USART_Rx_data_t *data)
 		Algorithm_int16_u chassis_power_limit;
 		Algorithm_fp32_u real_power;
 		Algorithm_int16_u buffer_energy;
+		Algorithm_fp32_u cap_v;
+		Algorithm_int32_u Communication_count;
+		Algorithm_int16 speed_out;
+		Algorithm_int16 chassis_given_current;
+		Algorithm_int16 chassis_speed_rpm;
+		Algorithm_fp32_u data1;
+		Algorithm_fp32_u data2;
+		Algorithm_fp32_u data3;
+		Algorithm_fp32_u data4;
+		Algorithm_fp32_u data5;
+		Algorithm_fp32_u data6;
+		Algorithm_fp32_u data7;
+		Algorithm_fp32_u data8;
 		for(int i=0;i<4;i++)
 		{
 			diff_angle.d[i]=buff[i+1];
 			initial_speed.d[i]=buff[i+7];
 			ins_big_yaw.d[i]=buff[i+11];
 			big_yaw_target.d[i]=buff[i+15];
+			real_power.d[i]=buff[i+27];			
+			cap_v.d[i]=buff[i+33];
+			Communication_count.d[i]=buff[i+37];
+			data1.d[i]=buff[i+47];
+			data2.d[i]=buff[i+51];
+			data3.d[i]=buff[i+55];
+			data4.d[i]=buff[i+59];
+			data5.d[i]=buff[i+63];
+			data6.d[i]=buff[i+67];
+			data7.d[i]=buff[i+71];
+			data8.d[i]=buff[i+75];
+		}
+		for(int i=0;i<2;i++)
+		{
 			shooter_barrel_heat_limit.d[i]=buff[i+19];
-			shooter_barrel_cooling_value.d[i]=buff[i+23];
-			shooter_17mm_1_barrel_heat.d[i]=buff[i+27];
-			chassis_power_limit.d[i]=buff[i+31];
-			real_power.d[i]=buff[i+35];
-			buffer_energy.d[i]=buff[i+39];
+			shooter_barrel_cooling_value.d[i]=buff[i+21];
+			shooter_17mm_1_barrel_heat.d[i]=buff[i+23];
+			chassis_power_limit.d[i]=buff[i+25];
+			buffer_energy.d[i]=buff[i+31];
+			speed_out.d[i]=buff[i+41];
+			chassis_given_current.d[i]=buff[i+43];
+			chassis_speed_rpm.d[i]=buff[i+45];
 		}
 		data->chassis_diff_angle=diff_angle.data;
 		data->trigger_back_over_flag=buff[5];
@@ -192,8 +239,32 @@ void Head1_data_Handle(uint8_t *buff,USART_Rx_data_t *data)
 		data->chassis_power_limit=chassis_power_limit.data;
 		data->real_power=real_power.data;
 		data->buffer_energy=buffer_energy.data;
+		data->cap_v=cap_v.data;
+		data->Communication_count=Communication_count.data;
+		data->speed_out=speed_out.data;
+		data->chassis_given_current=chassis_given_current.data;
+		data->chassis_speed_rpm=chassis_speed_rpm.data;
+		data->data[0]=data1.data;
+		data->data[1]=data2.data;
+		data->data[2]=data3.data;
+		data->data[3]=data4.data;
+		data->data[4]=data5.data;
+		data->data[5]=data6.data;
+		data->data[6]=data7.data;
+		data->data[7]=data8.data;
 	}
 
+	if(last_Communication_count==data->Communication_count)
+			err_cnt++;
+	else 
+		err_cnt=0;
+	
+	if(err_cnt>=100)
+		communication_state=UART_COMMUNICATION_ERR;
+	else
+		communication_state=UART_COMMUNICATION_NORMAL;
+
+	last_Communication_count=data->Communication_count;
 }
 
 

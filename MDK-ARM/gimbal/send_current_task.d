@@ -66,3 +66,16 @@ gimbal\send_current_task.o: ..\application\gimbal_task.h
 gimbal\send_current_task.o: ../Bsp/pid.h
 gimbal\send_current_task.o: ..\application\shoot_task.h
 gimbal\send_current_task.o: ..\application\trigger_task.h
+gimbal\send_current_task.o: ../Bsp/bsp_transmit.h
+gimbal\send_current_task.o: ../Inc/usart.h
+gimbal\send_current_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+gimbal\send_current_task.o: ../Components/ins_task.h
+gimbal\send_current_task.o: ../Components/Devices/BMI088driver.h
+gimbal\send_current_task.o: ../Components/Algorithm/QuaternionEKF.h
+gimbal\send_current_task.o: ../Components/kalman_filter.h
+gimbal\send_current_task.o: ../arm/arm_math.h
+gimbal\send_current_task.o: ../Drivers/CMSIS/Include/core_cm4.h
+gimbal\send_current_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+gimbal\send_current_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+gimbal\send_current_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+gimbal\send_current_task.o: ../Components/ins_task.h

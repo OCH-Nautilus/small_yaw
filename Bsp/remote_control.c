@@ -281,13 +281,9 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
 		rc_ctrl->keyboard.last_G =rc_ctrl->keyboard.key_G;
 		
 		if (rc_ctrl->keyboard.key_E == 1 && rc_ctrl->keyboard.last_E == 0)
-    {
-        rc_ctrl->keyboard.flag_E = !rc_ctrl->keyboard.flag_E;
-//        if (U_turn_reap_flag == 0)
-//            U_turn_flag = 1;
-    }
-
+    rc_ctrl->keyboard.flag_E = !rc_ctrl->keyboard.flag_E;
     rc_ctrl->keyboard.last_E = rc_ctrl->keyboard.key_E;
+		
 		WHEEL_STATE_Ctrl();//²¦ÂÖ×´Ì¬±æÊ¶
 		KEY_STATE_Ctrl();//Êó±ê×ó¼ü×´Ì¬±æÊ¶
 }

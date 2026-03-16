@@ -168,7 +168,7 @@ void chassis_rc_ctrl()
 		switch (rc_ctrl.rc.s[0])
 		{
 		case 1: // Õ”¬›
-			mode.chassis_state = CHASSIS_FOLLOW;//mode.chassis_state = CHASSIS_TOP;
+			mode.chassis_state = CHASSIS_TOP;//mode.chassis_state = CHASSIS_TOP;
 			break;
 		case 3: // ∏˙ÀÊ
 			mode.chassis_state = CHASSIS_FOLLOW;
@@ -206,7 +206,7 @@ void gimbal_rc_ctrl()
 			if(rc_ctrl.rc.s[0]!=1)
 				mode.gimbal_state = GIMBAL_NORMAL;
 			else 
-				mode.gimbal_state = GIMBAL_FOLD;
+				mode.gimbal_state = GIMBAL_FOLD;//GIMBAL_FOLD
 		}
 		else
 			mode.gimbal_state = GIMBAL_VISION;
@@ -320,9 +320,9 @@ void tirgger_rc_ctrl()
 		
 		if (mode.gimbal_state == GIMBAL_VISION&&mode.shoot_state==SHOOT_OPEN&&TRIGGER.back_over_flag)
 		{
-			if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&IF_FIRE()&&mode.vision_switch_state==VISION_ARMOR)//Œ‰ø∆
+			if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&IF_FIRE()&&mode.vision_switch_state==VISION_ARMOR&&rc_ctrl.rc.WHEEL_State == DOWN_LONG)//Œ‰ø∆
 			{
-				mode.trigger_state = TRIGGER_LONG;
+				mode.trigger_state = TRIGGER_SINGLE;
 			}
 			else if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&(mode.vision_switch_state==VISION_SMALL_BUFF||mode.vision_switch_state==VISION_BIG_BUFF)&&rc_ctrl.rc.WHEEL_State == DOWN_SHORT)
 			{
@@ -413,14 +413,10 @@ void gimbal_pc_ctrl()
 	else
 		GIMBAL.PT_flag = 0;
 
+
+	
 	if (rc_ctrl.keyboard.key_R == 1 && GIMBAL.IF_DT_OVER == 1 && (mode.gimbal_state == GIMBAL_NORMAL||mode.gimbal_state == GIMBAL_FOLD)) // µ˜Õ∑°™°™º¸ Û
 	{
-		GIMBAL.DT_Time++;
-	}
-	if (GIMBAL.DT_Time > 0 && rc_ctrl.keyboard.key_R == 0)
-	{
-		GIMBAL.DT_Time = 0;
-
 		GIMBAL.IF_DT = 1;
 		GIMBAL.IF_DT_OVER = 0;
 	}
@@ -497,33 +493,47 @@ void tirgger_pc_ctrl()
 	else
 		mode.trigger_state =TRIGGER_IDLE;
 
-	if (mode.gimbal_state == GIMBAL_VISION && mode.shoot_state==SHOOT_OPEN)//&&TRIGGER.back_over_flag
-	{
-		switch(VisionToGimbal.mode)
+//	if (mode.gimbal_state == GIMBAL_VISION && mode.shoot_state==SHOOT_OPEN)//&&TRIGGER.back_over_flag
+//	{
+//		switch(VisionToGimbal.mode)
+//			{
+//				case 0:
+//					mode.trigger_state =TRIGGER_IDLE;
+//				break;
+//				case 1:
+//					mode.trigger_state =TRIGGER_IDLE;
+//				break;
+//				case 2:
+//				
+//					if (TRIGGER.weak_flag == 0) 
+//					{							
+//						if (mode.vision_switch_state == VISION_ARMOR)
+//							mode.trigger_state = TRIGGER_LONG;
+//						if (mode.vision_switch_state == VISION_SMALL_BUFF || mode.vision_switch_state == VISION_BIG_BUFF)
+//							mode.trigger_state = TRIGGER_SINGLE;
+//					} 
+//					else						  
+//						mode.trigger_state =TRIGGER_IDLE;
+//								
+//				break;
+//				default :
+//				break;
+//			}
+//	}
+		if (mode.gimbal_state == GIMBAL_VISION&&mode.shoot_state==SHOOT_OPEN&&TRIGGER.back_over_flag)
+		{
+			if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&IF_FIRE()&&mode.vision_switch_state==VISION_ARMOR)//Œ‰ø∆
 			{
-				case 0:
-					mode.trigger_state =TRIGGER_IDLE;
-				break;
-				case 1:
-					mode.trigger_state =TRIGGER_IDLE;
-				break;
-				case 2:
-				
-					if (TRIGGER.weak_flag == 0) 
-					{							
-						if (mode.vision_switch_state == VISION_ARMOR)
-							mode.trigger_state = TRIGGER_LONG;
-						if (mode.vision_switch_state == VISION_SMALL_BUFF || mode.vision_switch_state == VISION_BIG_BUFF)
-							mode.trigger_state = TRIGGER_SINGLE;
-					} 
-					else						  
-						mode.trigger_state =TRIGGER_IDLE;
-								
-				break;
-				default :
-				break;
+				mode.trigger_state = TRIGGER_LONG;
 			}
-	}
+			else if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&(mode.vision_switch_state==VISION_SMALL_BUFF||mode.vision_switch_state==VISION_BIG_BUFF)&&rc_ctrl.mouse.KEY_L_State == PUSH_SHORT)
+			{
+				mode.trigger_state = TRIGGER_SINGLE;
+			}
+			else 
+				mode.trigger_state =TRIGGER_IDLE;
+		}
+
 }
 
 
@@ -562,7 +572,7 @@ void chassis_speed(void)
 	{
 		mode.chassis_speed_state = SPEED_SHIFT;
 	}
-	else if (rc_ctrl.keyboard.key_E)
+	else if (rc_ctrl.keyboard.flag_E)
 	{
 		mode.chassis_speed_state = SPEED_FLY;
 	}

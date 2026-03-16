@@ -33,6 +33,7 @@ void back_stick(void);
 void stick_judge(void);
 float floatabs(float a);
 void trigger_state_judge(void);
+extern stuck_t stuck_state;
 
 void trigger_heat(void);//热量限制
 

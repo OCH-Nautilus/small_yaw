@@ -8,6 +8,7 @@
 #include "string.h"
 #include "pid.h"
 #include "CRC8_CRC16.h"
+#include "bsp_transmit.h"
 #include "config.h"
 uint8_t buf[43] = {0};
 uint32_t vision_time = 0;
@@ -171,10 +172,10 @@ void tx_handle(SendRobotCmdData *data)
 	data->v_x=0;
 	data->v_y=0;
 	data->v_z=0;
-	data->bullet_speed=25;
+	data->bullet_speed=USART_Rx_data.initial_speed;
 	data->controller_delay=0;
 	data->manual_reset_count=0;
-	data->detect_color=1;
+	data->detect_color=0;
 	
 
 }
@@ -286,7 +287,7 @@ bool IF_DISCERN(void)
 //ÊÇ·ñ¿ª»ð
 bool IF_FIRE(void)
 {
-	if(fabs(INS.Yaw-Vision_Rx.yaw)<(Vision_Rx.enable_yaw_diff/2.0f)&&fabs(INS.Pitch-Vision_Rx.pitch)<Vision_Rx.enable_pitch_diff)
+	if(fabs(INS.Yaw-Vision_Rx.yaw)<(Vision_Rx.enable_yaw_diff/6.0f)&&fabs(INS.Pitch-Vision_Rx.pitch)<Vision_Rx.enable_pitch_diff)
 		return 1;
 	else
 		return 0;

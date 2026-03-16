@@ -21,4 +21,6 @@ void shoot_init(void);
 void frictiongear_calc(void);
 void temp_shoot(void);
 void shoot_speed_adjust(void);
+bool_t shoot_l_detect(void);
+bool_t shoot_r_detect(void);
 

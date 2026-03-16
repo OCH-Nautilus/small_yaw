@@ -224,3 +224,20 @@ void damiao_record(CAN_HandleTypeDef* hcan,uint16_t id)
 	tx_data[7]=0xFE;
 	HAL_StatusTypeDef_t=HAL_CAN_AddTxMessage(hcan, &tx_header, tx_data,&CAN_TX_MAILBOX); 
 }
+
+void damiao_clear(CAN_HandleTypeDef* hcan,uint16_t id)
+{
+	CAN_TxHeaderTypeDef tx_header;
+  uint8_t             tx_data[8];
+	uint32_t    CAN_TX_MAILBOX;  //CAN_TX_MAILBOX0
+		   
+  tx_header.StdId = id;       //
+  tx_header.IDE   = CAN_ID_STD;     //标准ID，
+  tx_header.RTR   = CAN_RTR_DATA;   //选择帧为数据帧  
+  tx_header.DLC   = 8;              //帧数据长度
+	
+	tx_data[0]=tx_data[1]=tx_data[2]=tx_data[3]=
+	tx_data[4]=tx_data[5]=tx_data[6]=0xFF;
+	tx_data[7]=0xFB;
+	HAL_StatusTypeDef_t=HAL_CAN_AddTxMessage(hcan, &tx_header, tx_data,&CAN_TX_MAILBOX); 
+}
