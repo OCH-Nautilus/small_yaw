@@ -79,3 +79,4 @@ gimbal\send_current_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 gimbal\send_current_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 gimbal\send_current_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 gimbal\send_current_task.o: ../Components/ins_task.h
+gimbal\send_current_task.o: ../Bsp/detect.h

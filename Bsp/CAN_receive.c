@@ -40,6 +40,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
  */
 int dx = 0;
 int de = 0;
+uint32_t small_yaw_err_cnt=0;
 uint8_t rx_buff[8];
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
@@ -50,7 +51,6 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	switch (rx_header.StdId)
 	{
 
-	
 		case 0x206://+
 			frictiongear_l.msg_cnt++ <= 50 ? get_moto_offset(&frictiongear_l, rx_data) : \
 			encoder_data_handle(&frictiongear_l, rx_data);
@@ -63,6 +63,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 			trigger_motor.msg_cnt++ <= 50 ? get_moto_offset(&trigger_motor, rx_data) : encoder_data_handle(&trigger_motor, rx_data);
 		break;
 		case 0x04://can id0x05
+			small_yaw_err_cnt++;
 		damiao_4310_data_handle(&small_yaw,rx_data);
 		break;
 	default:

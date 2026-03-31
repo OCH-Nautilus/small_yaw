@@ -10,7 +10,7 @@
 
 #define DATA_COUNT_RX	320
 #define DATA_COUNT_TX	82
-#define DATA_COUNT	80//接收字节数
+#define DATA_COUNT	49//接收字节数
 
 #define USART_RX_HAED   0XA5
 #define USART_RX_END    0XAA
@@ -32,7 +32,7 @@ typedef struct
 	uint8_t head;
 	
 	float chassis_diff_angle;
-	uint8_t trigger_back_over_flag;
+	uint8_t chassis_if_blackout;
 	uint8_t trigger_weak_flag;
 	float initial_speed;
 	float ins_big_yaw;//大yaw陀螺仪值
@@ -48,7 +48,7 @@ typedef struct
 	int16_t speed_out;
 	int16_t chassis_given_current;
 	int16_t chassis_speed_rpm;
-	float data[8];
+	uint8_t vision_color;
 	uint8_t tail;
 }USART_Rx_data_t;
 
@@ -93,7 +93,6 @@ typedef struct
             uint8_t Key_S : 1;  // 位1
             uint8_t Key_A : 1;  // 位2
             uint8_t Key_D : 1;  // 位3
-            //uint8_t reserved_keys : 4;  // 位4-7，保留位
 			uint8_t Key_Shift : 1;  //位4
 			uint8_t Key_Flag_E : 1;//位5
 			uint8_t Key_E : 1;//位6
@@ -119,11 +118,13 @@ typedef struct
                 uint8_t IF_DISCERN :1;
                 uint8_t IF_PT_OVER :1;
                 uint8_t stuck_state :1;// 0正常，1卡弹
-                uint8_t shoot_l :1;// 位3-7，保留位
+                uint8_t shoot_l :1;
                 uint8_t shoot_r :1;
                 uint8_t	down_over_flag :1;
-                uint8_t reserved_flags_1 : 2; // 位6-7，保留位
-                uint8_t reserved_flags_2 : 8; // 位8-15，保留位		
+								uint8_t	rotate_direction:1;
+                uint8_t top_mode : 1; // 小陀螺变速模式
+								uint8_t detect_flag :1;
+                uint8_t reserved_flags_2 : 7; // 位8-15，保留位		
             }bits;
          } flag;
     uint8_t tail;  // 帧尾

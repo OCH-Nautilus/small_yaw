@@ -34,6 +34,8 @@ extern float accel_kalman,angel_accle;//差分获得的角加速度
 extern pid_type_def pid_yaw_angle_Recognition, pid_yaw_speed_Recognition;
 extern pid_type_def pid_pitch_angle;
 extern pid_type_def pid_pitch_speed;
+extern stuck_t stuck_state;
+extern pid_type_def pid_trigger_speed_long;
 
 void StartVOFATask(void const * argument)
 {
@@ -47,13 +49,14 @@ void StartVOFATask(void const * argument)
 		//Vofa_Send_Data8(small_yaw._torq,VisionToGimbal.yaw_acc.d,VisionToGimbal.yaw_vel.d,0,0,0,0,0);
 		//Vofa_Send_Data8(TRIGGER.if_back_flag,TRIGGER.back_over_flag,TRIGGER.err_cnt,TRIGGER.once_target_ecd,0,0,0,0);
 		//Vofa_Send_Data8(Vision_Rx.yaw,INS.Yaw,Vision_Rx.v_yaw,Vision_Rx.enable_yaw_diff,Vision_Rx.appear,IF_FIRE(),IF_DISCERN(),mode.trigger_state);
-Vofa_Send_Data8(Vision_Rx.yaw,INS.Yaw,Vision_Rx.pitch,INS.Pitch,Vision_Rx.a_yaw,IF_FIRE(),Vision_Rx.enable_pitch_diff,Vision_Rx.enable_yaw_diff);
+Vofa_Send_Data8(Vision_Rx.yaw,INS.Yaw,Vision_Rx.pitch,INS.Pitch,pid_yaw_vision_armor_speed.out,yaw_vision_forward.output,pid_trigger_speed_long.set,IF_FIRE());
 		//Vofa_Send_Data8(mode.gimbal_state,mode.vision_switch_state,mode.trigger_state,0,0,0,0,0);
-		//Vofa_Send_Data8(USART_Rx_data.chassis_power_limit,USART_Rx_data.real_power,USART_Rx_data.buffer_energy,USART_Rx_data.cap_v,USART_Rx_data.data[5],USART_Rx_data.data[0],USART_Rx_data.data[1],USART_Rx_data.data[2]);
+		//Vofa_Send_Data8(USART_Rx_data.chassis_power_limit,USART_Rx_data.real_power,USART_Rx_data.buffer_energy,USART_Rx_data.cap_v,0,0,0,0);
 		//Vofa_Send_Data8(USART_Rx_data.shooter_barrel_heat_limit,USART_Rx_data.shooter_barrel_cooling_value,USART_Rx_data.shooter_17mm_1_barrel_heat,USART_Rx_data.chassis_speed_rpm,0,0,0,0);
 		//Vofa_Send_Data8(USART_Rx_data.real_power,USART_Rx_data.chassis_given_current,USART_Rx_data.chassis_speed_rpm,USART_Rx_data.speed_out,USART_Rx_data.data[1],USART_Rx_data.data[2],USART_Rx_data.data[3],USART_Rx_data.data[4]);
 		//Vofa_Send_Data8(big_pitch.ERR,0,0,0,0,0,0,0);
 		//Vofa_Send_Data8(pid_pitch_angle.set,pid_pitch_angle.ref,pid_pitch_angle.out,pid_pitch_speed.ref,pid_pitch_speed.out,INS.Pitch,small_pitch._torq,0);
+		//Vofa_Send_Data8(GIMBAL.yaw_target,INS.Yaw,USART_Rx_data.big_yaw_target,USART_Rx_data.ins_big_yaw,0,0,0,0);
 		vTaskDelay(10);
   }
 }

@@ -124,6 +124,7 @@ typedef struct
 		uint8_t last_Q;
 		uint8_t last_G;
 		uint8_t last_E;
+		uint8_t last_F;
 		
 		uint8_t flag_Z;
 		uint8_t flag_X;
@@ -133,6 +134,7 @@ typedef struct
 		uint8_t flag_Q;
 		uint8_t flag_G;
 		uint8_t flag_E;
+		uint8_t flag_F;
 		
 		float vx;
 		float vy;

@@ -67,16 +67,17 @@ void trigger_init()
  */
 void trigger_pid_calc()
 {
-	 if ((mode.trigger_state == TRIGGER_SINGLE) || (mode.trigger_state == TRIGGER_IDLE) || stuck_state==STUCK_ERR)
+	 if ((stuck_state==STUCK_NORMAL&&(mode.trigger_state == TRIGGER_SINGLE||mode.trigger_state == TRIGGER_IDLE )) || stuck_state==STUCK_ERR)
    {
        PID_calc(&pid_trigger_angle_signle, trigger_motor.total_ecd, TRIGGER.once_target_ecd);
        TRIGGER.output = PID_calc(&pid_trigger_speed_signle, trigger_motor.speed_rpm, pid_trigger_angle_signle.out);
    }
-   else if (mode.trigger_state == TRIGGER_LONG)
+   else if (stuck_state==STUCK_NORMAL&&mode.trigger_state == TRIGGER_LONG)
    {
        TRIGGER.output = PID_calc(&pid_trigger_speed_long, trigger_motor.speed_rpm, TRIGGER.conti_speed);
    }
-
+	 else
+		 TRIGGER.output=0;	
 }
 
 /**
@@ -90,7 +91,7 @@ void once_shoot()
    if (mode.trigger_state == TRIGGER_SINGLE)
        TRIGGER.once_first_flag = 1;
 
-   if (TRIGGER.once_first_flag)
+   if (TRIGGER.once_first_flag&&TRIGGER.once_over_flag)//原来是TRIGGER.once_first_flag
    {
        TRIGGER.once_first_flag = 0;
        TRIGGER.once_target_ecd = trigger_motor.total_ecd + ONCE_SHOOT_ANGLE_MAILUN;
@@ -254,7 +255,7 @@ void trigger_heat() // 热量限制
     if (heat_limit - heat + next_heat_change() < 20)
     {
         mode.trigger_state = TRIGGER_IDLE;
-        TRIGGER.weak_flag = 1;
+        TRIGGER.weak_flag = 1;//1
     }
     else
         TRIGGER.weak_flag = 0;

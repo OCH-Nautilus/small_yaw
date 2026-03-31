@@ -76,6 +76,7 @@ void fold_state_judge(void);
 void u_turn(void);
 void turn_round(void);	
 float shortestAngleDiff(float current, float target) ;
+bool_t small_yaw_offline_protect(void);
 
 
 void yaw_limit(void);

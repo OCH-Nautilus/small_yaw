@@ -112,6 +112,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	 MX_USB_DEVICE_Init();
 	remote_control_init();
+	HAL_GPIO_WritePin(GPIOH,LED_R_Pin,GPIO_PIN_SET);
+
 	can1_user_init();
 	can2_user_init();
 	DWT_Init(168);

@@ -265,8 +265,8 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   /* USER CODE BEGIN 6 */
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
-	//vision_rx(Buf);//Í¬¼Ã
-	receive_vision(Buf);//Îä¿Æ
+	//vision_rx(Buf);//Í¬ï¿½ï¿½
+	receive_vision(Buf);//ï¿½ï¿½ï¿½
 	GIMBAL.last_yaw_vision_target = Vision_Rx.yaw;
   return (USBD_OK);
   /* USER CODE END 6 */

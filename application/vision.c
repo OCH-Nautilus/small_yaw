@@ -175,7 +175,7 @@ void tx_handle(SendRobotCmdData *data)
 	data->bullet_speed=USART_Rx_data.initial_speed;
 	data->controller_delay=0;
 	data->manual_reset_count=0;
-	data->detect_color=0;
+	data->detect_color=USART_Rx_data.vision_color;
 	
 
 }
@@ -252,7 +252,11 @@ void receive_vision(uint8_t *buff)
 		
 		if(Vision_Rx.appear)
 		{
-			GIMBAL.yaw_vision_target=zero_180(Vision_Rx.yaw);
+			if(Vision_Rx.yaw>180.0f||Vision_Rx.yaw<-180.0f)
+				GIMBAL.yaw_vision_target=INS.Yaw;
+			else
+				GIMBAL.yaw_vision_target=Vision_Rx.yaw;
+			
 			GIMBAL.pitch_vision_target=pitch_protect(Vision_Rx.pitch);
 		}
 		else
@@ -287,7 +291,7 @@ bool IF_DISCERN(void)
 //ÊÇ·ñ¿ª»ð
 bool IF_FIRE(void)
 {
-	if(fabs(INS.Yaw-Vision_Rx.yaw)<(Vision_Rx.enable_yaw_diff/6.0f)&&fabs(INS.Pitch-Vision_Rx.pitch)<Vision_Rx.enable_pitch_diff)
+	if(fabs(INS.Yaw-Vision_Rx.yaw)<(Vision_Rx.enable_yaw_diff/1.5f)&&fabs(INS.Pitch-Vision_Rx.pitch)<Vision_Rx.enable_pitch_diff)//
 		return 1;
 	else
 		return 0;

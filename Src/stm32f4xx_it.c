@@ -272,7 +272,7 @@ void TIM2_IRQHandler(void)
 
 /**
   * @brief This function handles USART1 global interrupt.
-  */int qzz;
+  */int qzz=0;
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
@@ -460,7 +460,6 @@ void USART6_IRQHandler(void)
 //     	       temp = huart6.hdmarx->Instance->NDTR;
 //		//RX_BUFFER_COUNTҪ���õı�ʵ��Ҫ���յĶ࣬CHASSIS_Rx_buff_count��ʵ�ʽ��ܵ��ֽ���
 //			qzz = DATA_COUNT_RX- temp;
-//			jjj++;
 //		if((DATA_COUNT_RX- temp) == DATA_COUNT)
 //		{
 //			
@@ -469,75 +468,9 @@ void USART6_IRQHandler(void)
 //		}
 ////		DMA2->LIFCR = DMA_FLAG_DMEIF1_5 | DMA_FLAG_FEIF1_5 | DMA_FLAG_HTIF1_5 | DMA_FLAG_TCIF1_5 | DMA_FLAG_TEIF1_5;
 ////		__HAL_DMA_SET_COUNTER(huart1.hdmarx, DATA_COUNT_4);
-////		__HAL_DMA_ENABLE(huart1.hdmarx);    
-
+////		__HAL_DMA_ENABLE(huart1.hdmarx);       
 //			HAL_UART_Receive_DMA(&huart6,USART_Rx_data_handle,DATA_COUNT_RX);
-//		
 //	}
-	
-
-//qzz = __HAL_UART_GET_FLAG(&huart6, UART_FLAG_IDLE);
-//  jjj=     __HAL_UART_GET_IT_SOURCE(&huart6, UART_IT_IDLE);
-// if (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_IDLE) && 
-//        __HAL_UART_GET_IT_SOURCE(&huart6, UART_IT_IDLE))
-//    {
-//        // 1. ????????(???!)
-//        __HAL_UART_CLEAR_IDLEFLAG(&huart6);
-//        
-//        // 2. ??????(??????)
-//        uint32_t now = HAL_GetTick();
-//        if ((now - last_int_time) < 1)  // ??1ms??????
-//        {
-//            // ????,??????:??DMA
-//            HAL_UART_AbortReceive(&huart6);
-//            __HAL_DMA_DISABLE(huart6.hdmarx);
-//            __HAL_DMA_SET_COUNTER(huart6.hdmarx, 48);
-//            __HAL_DMA_ENABLE(huart6.hdmarx);
-//            HAL_UART_Receive_DMA(&huart6, (uint8_t*)active_buffer, 48);
-//            return;
-//        }
-//        last_int_time = now;
-//        
-//        // 3. ????DMA??
-//        HAL_UART_AbortReceive(&huart6);
-//        
-//        // 4. ??DMA????(??????temp)
-//        static uint16_t temp;
-//        __HAL_DMA_DISABLE(huart6.hdmarx);  // ??DMA???
-//        temp = ((DMA_Stream_TypeDef *)huart6.hdmarx->Instance)->NDTR;
-//        
-//        // 5. ??????????(??????abc)
-//        
-//        // 6. ???????
-//        if (active_buffer == USART_Rx_data_handle)
-//        {
-//            ready_buffer = USART_Rx_data_handle;          // ????????
-//            active_buffer = USART_Rx_data_handle_backup;  // ???????
-//        }
-//        else
-//        {
-//            ready_buffer = USART_Rx_data_handle_backup;   // ????????
-//            active_buffer = USART_Rx_data_handle;         // ???????
-//        }
-//        
-//        // 7. ????????(???????)
-//        data_ready_flag = 1;
-//        
-//        // 8. ????DMA(?????????)
-//        __HAL_DMA_SET_COUNTER(huart6.hdmarx, 48);
-//        __HAL_DMA_ENABLE(huart6.hdmarx);
-//        HAL_UART_Receive_DMA(&huart6, (uint8_t*)active_buffer, 48);
-//				HAL_Delay(5);
-
-//    }
-
-
-
-
-
-
-
-
   /* USER CODE END USART6_IRQn 0 */
   HAL_UART_IRQHandler(&huart6);
   /* USER CODE BEGIN USART6_IRQn 1 */

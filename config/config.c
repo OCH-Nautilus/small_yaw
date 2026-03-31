@@ -39,7 +39,10 @@
 
 //tip.如果板间通信出问题，那么所有电机都发0电流
 
-
+//tip.重新装车后，注意改
+			#define FOLD_BIG_PITCH_ANGLE 折叠模式下大pitch的目标角度
+			#define FOLD_SMALL_YAW_ANGLE 折叠模式下小yaw的目标角度
+			主控在云台的左前边为正方向
 
 
 

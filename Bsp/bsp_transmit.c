@@ -16,7 +16,8 @@ USART_TX_data_t  USART_TX_data;
 uint8_t USART_Rx_data_handle[DATA_COUNT];
 uint8_t USART_Tx_buff[USART_DATA_COUNT] = {0};
 communication_state_e communication_state;
-
+extern uint8_t Rotate_direction;//小陀螺旋转方向
+extern uint8_t top_mode;
 /**
   * @Name    Transmit_Data_Task
   * @brief   串口数据发送任务
@@ -116,6 +117,9 @@ void USART_Data_Handle(USART_TX_data_t *data)
 		data->flag.bits.shoot_r=shoot_r_detect();
 		data->flag.bits.stuck_state=stuck_state;
 		data->flag.bits.down_over_flag=GIMBAL.down_over;
+		data->flag.bits.rotate_direction=Rotate_direction;
+		data->flag.bits.top_mode=top_mode;
+		data->flag.bits.detect_flag=toe_offline[0].communication_state;
     // 设置帧尾
     data->tail = USART_TX_END;
 }
@@ -190,14 +194,7 @@ void Head1_data_Handle(uint8_t *buff,USART_Rx_data_t *data)
 		Algorithm_int16 speed_out;
 		Algorithm_int16 chassis_given_current;
 		Algorithm_int16 chassis_speed_rpm;
-		Algorithm_fp32_u data1;
-		Algorithm_fp32_u data2;
-		Algorithm_fp32_u data3;
-		Algorithm_fp32_u data4;
-		Algorithm_fp32_u data5;
-		Algorithm_fp32_u data6;
-		Algorithm_fp32_u data7;
-		Algorithm_fp32_u data8;
+
 		for(int i=0;i<4;i++)
 		{
 			diff_angle.d[i]=buff[i+1];
@@ -207,14 +204,6 @@ void Head1_data_Handle(uint8_t *buff,USART_Rx_data_t *data)
 			real_power.d[i]=buff[i+27];			
 			cap_v.d[i]=buff[i+33];
 			Communication_count.d[i]=buff[i+37];
-			data1.d[i]=buff[i+47];
-			data2.d[i]=buff[i+51];
-			data3.d[i]=buff[i+55];
-			data4.d[i]=buff[i+59];
-			data5.d[i]=buff[i+63];
-			data6.d[i]=buff[i+67];
-			data7.d[i]=buff[i+71];
-			data8.d[i]=buff[i+75];
 		}
 		for(int i=0;i<2;i++)
 		{
@@ -228,7 +217,7 @@ void Head1_data_Handle(uint8_t *buff,USART_Rx_data_t *data)
 			chassis_speed_rpm.d[i]=buff[i+45];
 		}
 		data->chassis_diff_angle=diff_angle.data;
-		data->trigger_back_over_flag=buff[5];
+		data->chassis_if_blackout=buff[5];
 		data->trigger_weak_flag=buff[6];
 		data->initial_speed=initial_speed.data;
 		data->ins_big_yaw=ins_big_yaw.data;
@@ -244,14 +233,7 @@ void Head1_data_Handle(uint8_t *buff,USART_Rx_data_t *data)
 		data->speed_out=speed_out.data;
 		data->chassis_given_current=chassis_given_current.data;
 		data->chassis_speed_rpm=chassis_speed_rpm.data;
-		data->data[0]=data1.data;
-		data->data[1]=data2.data;
-		data->data[2]=data3.data;
-		data->data[3]=data4.data;
-		data->data[4]=data5.data;
-		data->data[5]=data6.data;
-		data->data[6]=data7.data;
-		data->data[7]=data8.data;
+		data->vision_color=buff[47];
 	}
 
 	if(last_Communication_count==data->Communication_count)

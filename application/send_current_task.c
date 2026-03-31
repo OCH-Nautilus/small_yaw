@@ -11,6 +11,7 @@
 #include "bsp_transmit.h"
 #include "ins_task.h"
 #include "math.h"
+#include "detect.h"
 int time=0;
 void send_current_task(void const * argument)
 {
@@ -123,7 +124,10 @@ void Error_Pitch()
  */
 void shoot_ctrl_current()
 {
-	set_motor_current(&hcan2, 0x1ff,TRIGGER.output, SHOOT.output[0], SHOOT.output[1], 0);
+	if(mode.trigger_state==TRIGGER_IDLE&&stuck_state==STUCK_NORMAL)
+		set_motor_current(&hcan2, 0x1ff,0, SHOOT.output[0], SHOOT.output[1], 0);
+	else
+		set_motor_current(&hcan2, 0x1ff,TRIGGER.output, SHOOT.output[0], SHOOT.output[1], 0);
 }
 /**
  * @brief Ä¦²ÁÂÖ²¦µ¯ÅÌ´íÎóµçÁ÷·¢ËÍ
@@ -136,32 +140,61 @@ void Error_Shoot()
 }
 
 
-
+int yuu1=0,yuu2=0,yuu3=0;
 
 
 void enable_disable_DM4310(void)
 {
-	static int16_t dm_cnt=30;
-	if (mode.gimbal_state != GIMBAL_IDLE)
+//	yuu1++;
+//	static int16_t enable_cnt=80;
+//	if(mode.gimbal_state != GIMBAL_IDLE&&enable_cnt>0)
+//	{
+//		yuu2++;
+//		damiao_init(&hcan2, 0x05);
+//		vTaskDelay(1);
+//		damiao_init(&hcan1, 0x03);
+//		vTaskDelay(1);
+//		damiao_init(&hcan1, 0x04);
+//		vTaskDelay(1);	
+//		enable_cnt--;
+//	}
+//	else if(mode.gimbal_state == GIMBAL_IDLE)
+//	{
+//		yuu3++;
+//		enable_cnt=80;
+//		damiao_exit(&hcan2, 0x05);
+//		vTaskDelay(1);
+//		damiao_exit(&hcan1, 0x03);
+//		vTaskDelay(1);
+//		damiao_exit(&hcan1, 0x04);
+//		vTaskDelay(1);
+//	}
+	if (mode.controls_state==RC_ctrl&&mode.gimbal_state != GIMBAL_IDLE&&(small_pitch.ERR==0||big_pitch.ERR==0))
 	{			
-			if (dm_cnt > 0)
-			{
+			
 					damiao_init(&hcan2, 0x05);
 					vTaskDelay(1);
 					damiao_init(&hcan1, 0x03);
 					vTaskDelay(1);
 					damiao_init(&hcan1, 0x04);
-					dm_cnt--;
-					vTaskDelay(1);
-			}
-			
+					vTaskDelay(1);						
 	}
-	else
+	if(mode.controls_state==KEY_ctrl&&toe_offline[0].communication_state == COMMUNICATION_NORMAL&&(small_pitch.ERR==0||big_pitch.ERR==0))
+	{
+					damiao_init(&hcan2, 0x05);
+					vTaskDelay(1);
+					damiao_init(&hcan1, 0x03);
+					vTaskDelay(1);
+					damiao_init(&hcan1, 0x04);
+					vTaskDelay(1);						
+	}
+	if(mode.gimbal_state == GIMBAL_IDLE||toe_offline[0].communication_state == COMMUNICATION_NONE)
 	{
 			damiao_exit(&hcan2, 0x05);
+			vTaskDelay(1);
 			damiao_exit(&hcan1, 0x03);
+			vTaskDelay(1);
 			damiao_exit(&hcan1, 0x04);
-			dm_cnt=30;
 			vTaskDelay(1);
 	}
 }

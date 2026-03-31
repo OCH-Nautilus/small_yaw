@@ -11,7 +11,8 @@
 mode_t mode;
 uint16_t chassis_last_mode=0;
 uint16_t chassis_now_mode=0;
-int16_t Rotate_direction=1;
+uint8_t Rotate_direction=1;//小陀螺旋转方向
+uint8_t top_mode=0;
 /**
  * @brief 主控模式切换
  * @note  滚轮上切换为键鼠控制，滚轮下切换为遥控器控制
@@ -97,6 +98,7 @@ void system_conctrl()
 			mode.gimbal_state = GIMBAL_IDLE;
 			mode.trigger_state =TRIGGER_IDLE;
 			mode.vision_switch_state = VISION_CLOSE;
+			top_mode=0;
 			
 		}
         break;
@@ -110,6 +112,7 @@ void system_conctrl()
 			mode.gimbal_state = GIMBAL_IDLE;
 			mode.trigger_state =TRIGGER_IDLE;
 			mode.vision_switch_state = VISION_CLOSE;
+			top_mode=0;
 		}
         break;
     default:
@@ -137,20 +140,23 @@ void chassis_mode_change()
 			else
 			{
 				mode.chassis_state = CHASSIS_FOLLOW;
-				Rotate_direction = Rotate_direction * (-1);
+				Rotate_direction ^=1;
 			}
 		}
-		else if (Rotate_direction == -1)
+		else if (Rotate_direction == 0)
 		{
 			if (USART_Rx_data.chassis_diff_angle > 0.6f || USART_Rx_data.chassis_diff_angle < 0.0f)
 				 mode.chassis_state = CHASSIS_TOP;
 			else
 			{
 				 mode.chassis_state = CHASSIS_FOLLOW;
-				Rotate_direction = Rotate_direction * (-1);
+				Rotate_direction ^=1;
 			}
 		}
 	}
+	
+	
+	
 	chassis_last_mode =  mode.chassis_state;
 }
 
@@ -158,20 +164,26 @@ void chassis_mode_change()
  * @brief 遥控器控制底盘
  * @note
  * @param
- */
+ */uint8_t last_s_l=0;
 void chassis_rc_ctrl()
 {
-	if (toe_offline[0].communication_state == COMMUNICATION_NONE || rc_ctrl.rc.s[0] == 2)
+	if (toe_offline[0].communication_state == COMMUNICATION_NONE || rc_ctrl.rc.s[0] == 2||USART_Rx_data.chassis_if_blackout)
 		mode.chassis_state = CHASSIS_IDLE; // 无力
-	if (mode.gimbal_state != GIMBAL_IDLE)
+	else if (mode.gimbal_state != GIMBAL_IDLE)
 	{
 		switch (rc_ctrl.rc.s[0])
 		{
 		case 1: // 陀螺
-			mode.chassis_state = CHASSIS_TOP;//mode.chassis_state = CHASSIS_TOP;
+			if(CHASSIS_LIMIT())
+				mode.chassis_state = CHASSIS_TOP;//mode.chassis_state = CHASSIS_TOP;
+			else
+				mode.chassis_state = CHASSIS_IDLE; // 无力
 			break;
 		case 3: // 跟随
-			mode.chassis_state = CHASSIS_FOLLOW;
+			if(CHASSIS_LIMIT())
+				mode.chassis_state = CHASSIS_FOLLOW;
+			else
+				mode.chassis_state = CHASSIS_IDLE; // 无力
 			break;
 		case 2:
 			mode.chassis_state = CHASSIS_IDLE; // 无力
@@ -184,7 +196,15 @@ void chassis_rc_ctrl()
 	else
 		mode.chassis_state = CHASSIS_IDLE; // 无力
 
+	//变速小陀螺模式
+	if(last_s_l != 1&&rc_ctrl.rc.s[0]==1)
+	{	
+		if(++top_mode>=2)
+			top_mode=0;
+	}
+	
 	chassis_mode_change();
+	last_s_l=rc_ctrl.rc.s[0];
 }
 
 /**
@@ -195,18 +215,18 @@ void chassis_rc_ctrl()
 
 void gimbal_rc_ctrl()
 {
-	if (toe_offline[0].communication_state == COMMUNICATION_NONE)
+	if (toe_offline[0].communication_state == COMMUNICATION_NONE||small_yaw_offline_protect())
 	{
 		mode.gimbal_state = GIMBAL_IDLE;
 	}
-	if (toe_offline[0].communication_state == COMMUNICATION_NORMAL)
+	if (toe_offline[0].communication_state == COMMUNICATION_NORMAL&&!small_yaw_offline_protect())
 	{//未进入视觉模式下，左拨杆最上是折叠模式，中下是正常模式
 		if (rc_ctrl.rc.s[1] != 1)
 		{
 			if(rc_ctrl.rc.s[0]!=1)
 				mode.gimbal_state = GIMBAL_NORMAL;
 			else 
-				mode.gimbal_state = GIMBAL_FOLD;//GIMBAL_FOLD
+				mode.gimbal_state = GIMBAL_NORMAL;//GIMBAL_FOLD
 		}
 		else
 			mode.gimbal_state = GIMBAL_VISION;
@@ -243,9 +263,9 @@ void vision_rc_ctrl()
 	else
 	{
 		if (rc_ctrl.rc.s[0] == 3)
-			mode.vision_switch_state = VISION_SMALL_BUFF;
+			mode.vision_switch_state = VISION_ARMOR;//VISION_SMALL_BUFF
 		else if (rc_ctrl.rc.s[0] == 1)
-			mode.vision_switch_state = VISION_BIG_BUFF;
+			mode.vision_switch_state = VISION_ARMOR;//VISION_BIG_BUFF
 		else if (rc_ctrl.rc.s[0] == 2)
 			mode.vision_switch_state = VISION_ARMOR;
 	}
@@ -322,7 +342,7 @@ void tirgger_rc_ctrl()
 		{
 			if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&IF_FIRE()&&mode.vision_switch_state==VISION_ARMOR&&rc_ctrl.rc.WHEEL_State == DOWN_LONG)//武科
 			{
-				mode.trigger_state = TRIGGER_SINGLE;
+				mode.trigger_state = TRIGGER_LONG;//TRIGGER_LONG
 			}
 			else if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&(mode.vision_switch_state==VISION_SMALL_BUFF||mode.vision_switch_state==VISION_BIG_BUFF)&&rc_ctrl.rc.WHEEL_State == DOWN_SHORT)
 			{
@@ -344,12 +364,12 @@ void tirgger_rc_ctrl()
  * @note
  * @param
  */int a1,b1,c1,d1;
+
 void chassis_pc_ctrl()
-{a1++;
-	if (toe_offline[0].communication_state == COMMUNICATION_NONE)
+{
+	if (toe_offline[0].communication_state == COMMUNICATION_NONE||USART_Rx_data.chassis_if_blackout)
 	{
 		mode.chassis_state = CHASSIS_IDLE; // 无力
-		b1++;
 	}
 	else
 	{
@@ -357,30 +377,32 @@ void chassis_pc_ctrl()
 		{
 			if(GIMBAL.IF_DT_OVER==0)//处在掉头
 			{
-				if(rc_ctrl.keyboard.key_CTRL)
-					mode.chassis_state=CHASSIS_TOP;
-				else
-				{
+				if(rc_ctrl.keyboard.key_CTRL&&CHASSIS_LIMIT())
+					mode.chassis_state=CHASSIS_TOP;				
+				else 
 					mode.chassis_state=CHASSIS_IDLE;
-					c1++;
-				}
 			}
 			else
 			{
-				if(rc_ctrl.keyboard.key_CTRL)
+				if(rc_ctrl.keyboard.key_CTRL&&CHASSIS_LIMIT())
 					mode.chassis_state=CHASSIS_TOP;
-				else
+				else if(!rc_ctrl.keyboard.key_CTRL&&CHASSIS_LIMIT())
 					mode.chassis_state=CHASSIS_FOLLOW;
+				else
+					mode.chassis_state=CHASSIS_IDLE;
 			}
 		}
 		else
 		{
 			mode.chassis_state=CHASSIS_IDLE;
-			d1++;
 		}
 			
 	}
 
+	//变速小陀螺模式
+	
+			top_mode=rc_ctrl.keyboard.flag_F;
+	
 	chassis_mode_change();
 }
 
@@ -391,9 +413,9 @@ void chassis_pc_ctrl()
  */
 void gimbal_pc_ctrl()
 {
-	if (toe_offline[0].communication_state == COMMUNICATION_NONE)
+	if (toe_offline[0].communication_state == COMMUNICATION_NONE&&small_yaw_offline_protect())
 		mode.gimbal_state = GIMBAL_IDLE;
-	else
+	else 
 	{
 		if (rc_ctrl.mouse.press_r == 0)//不处于视觉模式
 		{
@@ -440,14 +462,14 @@ void vision_pc_ctrl()
 	{
 		if (mode.gimbal_state == GIMBAL_VISION)
 		{
-			if (rc_ctrl.mouse.press_l == 1)
-				mode.vision_switch_state = VISION_ARMOR;
-			else if (rc_ctrl.keyboard.key_V)
+//			if (rc_ctrl.mouse.press_l == 1)
+//				mode.vision_switch_state = VISION_ARMOR;
+			if (rc_ctrl.keyboard.key_V)
 				mode.vision_switch_state = VISION_SMALL_BUFF;
 			else if (rc_ctrl.keyboard.key_Z)
 				mode.vision_switch_state = VISION_BIG_BUFF;
 			else
-				mode.vision_switch_state = VISION_CLOSE;
+				mode.vision_switch_state = VISION_ARMOR;
 		}
 	}
 }
@@ -493,38 +515,12 @@ void tirgger_pc_ctrl()
 	else
 		mode.trigger_state =TRIGGER_IDLE;
 
-//	if (mode.gimbal_state == GIMBAL_VISION && mode.shoot_state==SHOOT_OPEN)//&&TRIGGER.back_over_flag
-//	{
-//		switch(VisionToGimbal.mode)
-//			{
-//				case 0:
-//					mode.trigger_state =TRIGGER_IDLE;
-//				break;
-//				case 1:
-//					mode.trigger_state =TRIGGER_IDLE;
-//				break;
-//				case 2:
-//				
-//					if (TRIGGER.weak_flag == 0) 
-//					{							
-//						if (mode.vision_switch_state == VISION_ARMOR)
-//							mode.trigger_state = TRIGGER_LONG;
-//						if (mode.vision_switch_state == VISION_SMALL_BUFF || mode.vision_switch_state == VISION_BIG_BUFF)
-//							mode.trigger_state = TRIGGER_SINGLE;
-//					} 
-//					else						  
-//						mode.trigger_state =TRIGGER_IDLE;
-//								
-//				break;
-//				default :
-//				break;
-//			}
-//	}
+
 		if (mode.gimbal_state == GIMBAL_VISION&&mode.shoot_state==SHOOT_OPEN&&TRIGGER.back_over_flag)
 		{
-			if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&IF_FIRE()&&mode.vision_switch_state==VISION_ARMOR)//武科
+			if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&(IF_FIRE()||rc_ctrl.mouse.press_l==1)&&mode.vision_switch_state==VISION_ARMOR)//武科
 			{
-				mode.trigger_state = TRIGGER_LONG;
+				mode.trigger_state = TRIGGER_LONG;//TRIGGER_LONG
 			}
 			else if(TRIGGER.weak_flag == 0&&IF_DISCERN()&&(mode.vision_switch_state==VISION_SMALL_BUFF||mode.vision_switch_state==VISION_BIG_BUFF)&&rc_ctrl.mouse.KEY_L_State == PUSH_SHORT)
 			{
@@ -582,5 +578,16 @@ void chassis_speed(void)
 	}
 }
 
-
+/**
+ * @brief 底盘模式切换限制
+ * @note	判断当前pitch角度，俯角过低底盘无力
+ * @param 可控底盘返回1，否则返回0
+ */
+bool_t CHASSIS_LIMIT()
+{
+	if(INS.Pitch<PITCH_LIMIT)
+		return 1;
+	else
+		return 0;
+}
 

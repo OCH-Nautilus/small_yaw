@@ -139,7 +139,7 @@ void MX_FREERTOS_Init(void) {
   MODE_TASKHandle = osThreadCreate(osThread(MODE_TASK), NULL);
 
   /* definition and creation of VisionTask */
-  osThreadDef(VisionTask, vision_task, osPriorityAboveNormal, 0, 512);
+  osThreadDef(VisionTask, vision_task, osPriorityAboveNormal, 0, 1024);
   VisionTaskHandle = osThreadCreate(osThread(VisionTask), NULL);
 
   /* definition and creation of REFEREETask */
@@ -159,7 +159,7 @@ void MX_FREERTOS_Init(void) {
   SHOOT_TASKHandle = osThreadCreate(osThread(SHOOT_TASK), NULL);
 
   /* definition and creation of TransmitTask */
-  osThreadDef(TransmitTask, Transmit_Data_Task, osPriorityAboveNormal, 0, 512);
+  osThreadDef(TransmitTask, Transmit_Data_Task, osPriorityAboveNormal, 0, 1024);
   TransmitTaskHandle = osThreadCreate(osThread(TransmitTask), NULL);
 
   /* definition and creation of TRIGGERTASK */

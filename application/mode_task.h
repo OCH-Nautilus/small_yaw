@@ -57,8 +57,6 @@ typedef enum
 }chassis_speed_state_t;//底盘加速度限制
 
 
-
-
 typedef struct 
 {
     controls_t               controls_state;
@@ -86,6 +84,7 @@ void tirgger_rc_ctrl(void);
 void tirgger_pc_ctrl(void);
 void Vision_to_Normal_init(void);
 void Normal_to_Vision_init(void);
+bool_t CHASSIS_LIMIT(void);
 
 extern mode_t mode;
 

@@ -46,15 +46,15 @@ void frictiongear_calc()
     if(mode.shoot_state==SHOOT_OPEN)
         SHOOT.frictiongear_speed=7000;
     else
-    {
         SHOOT.frictiongear_speed=0;
-    }
+		
 		if(mode.shoot_state==SHOOT_OPEN)
 			SHOOT.shoot_target_speed=SHOOT.frictiongear_speed+SHOOT.fix_num+SHOOT.temp_num;
 		else
 			SHOOT.shoot_target_speed=0;
-    SHOOT.output[0]=PID_calc(&pid_frictiongear_l,frictiongear_l.speed_rpm,SHOOT.shoot_target_speed);//l
-    SHOOT.output[1]=PID_calc(&pid_frictiongear_r,frictiongear_r.speed_rpm,-SHOOT.shoot_target_speed);//r
+		
+    SHOOT.output[0]=PID_calc(&pid_frictiongear_l,frictiongear_l.speed_rpm,-SHOOT.shoot_target_speed);//l
+    SHOOT.output[1]=PID_calc(&pid_frictiongear_r,frictiongear_r.speed_rpm,SHOOT.shoot_target_speed);//r
 }
 
 /**
