@@ -14,7 +14,8 @@ uint8_t buf[43] = {0};
 uint32_t vision_time = 0;
 uint16_t TX_OK_FLAG=0;
 
-uint8_t vision_buff[55]={0};
+//uint8_t vision_buff[55]={0};
+uint8_t vision_buff[46]={0};
 GimbalToVision_t GimbalToVision;
 VisionToGimbal_t VisionToGimbal;
 
@@ -31,7 +32,7 @@ void vision_task(void const * argument)
   {
 		//vision_tx();//同济
 		send_vision();//武科
-    vTaskDelay(1);
+    vTaskDelay(2);
   }
   /* USER CODE END vision_start */
 }
@@ -157,28 +158,74 @@ void vision_task(void const * argument)
 //}
 
 
+
+
+
 ////武科
+//void tx_handle(SendRobotCmdData *data)
+//{
+//	data->cmd_ID=0x02;
+//	data->time_stamp=HAL_GetTick();
+//	data->yaw=INS.Yaw*0.01745f;//*0.01745f
+//	data->pitch=INS.Pitch*0.01745f;
+//	data->roll=INS.Roll*0.01745f;
+//	data->ins_sum=0;
+//	data->yaw_vel=INS.Gyro[2];
+//	data->pitch_vel=INS.Gyro[1];
+//	data->roll_vel=INS.Gyro[0];
+//	data->v_x=0;
+//	data->v_y=0;
+//	data->v_z=0;
+//	data->bullet_speed=USART_Rx_data.initial_speed;
+//	data->controller_delay=0;
+//	data->manual_reset_count=0;
+//	data->detect_color=USART_Rx_data.vision_color;
+//	
+
+//}
 void tx_handle(SendRobotCmdData *data)
 {
 	data->cmd_ID=0x02;
 	data->time_stamp=HAL_GetTick();
-	data->yaw=INS.Yaw*0.01745f;//*0.01745f
-	data->pitch=INS.Pitch*0.01745f;
-	data->roll=INS.Roll*0.01745f;
-	data->ins_sum=0;
+	data->yaw=INS.Yaw;//*0.01745f
+	data->pitch=-INS.Pitch;
+	data->roll=INS.Roll;
 	data->yaw_vel=INS.Gyro[2];
-	data->pitch_vel=INS.Gyro[1];
+	data->pitch_vel=-INS.Gyro[1];
 	data->roll_vel=INS.Gyro[0];
 	data->v_x=0;
 	data->v_y=0;
 	data->v_z=0;
-	data->bullet_speed=USART_Rx_data.initial_speed;
-	data->controller_delay=0;
-	data->manual_reset_count=0;
+	data->bullet_speed=USART_Rx_data.initial_speed;//USART_Rx_data.initial_speed
+
 	data->detect_color=USART_Rx_data.vision_color;
 	
 
 }
+
+//void send_vision()
+//{
+//	tx_handle(&Vision_Tx);
+
+//	memcpy(vision_buff    ,(const void*)&Vision_Tx.cmd_ID,1);
+//	memcpy(vision_buff+1    ,(const void*)&Vision_Tx.time_stamp,4);
+//	memcpy(vision_buff+5    ,(const void*)&Vision_Tx.yaw,4);
+//	memcpy(vision_buff+9    ,(const void*)&Vision_Tx.pitch,4);
+//	memcpy(vision_buff+13    ,(const void*)&Vision_Tx.roll,4);
+//	memcpy(vision_buff+17    ,(const void*)&Vision_Tx.ins_sum,4);
+//	memcpy(vision_buff+21    ,(const void*)&Vision_Tx.yaw_vel,4);
+//	memcpy(vision_buff+25    ,(const void*)&Vision_Tx.pitch_vel,4);
+//	memcpy(vision_buff+29    ,(const void*)&Vision_Tx.roll_vel,4);
+//	memcpy(vision_buff+33    ,(const void*)&Vision_Tx.v_x,4);
+//	memcpy(vision_buff+37    ,(const void*)&Vision_Tx.v_y,4);
+//	memcpy(vision_buff+41    ,(const void*)&Vision_Tx.v_z,4);
+//	memcpy(vision_buff+45    ,(const void*)&Vision_Tx.bullet_speed,4);
+//	memcpy(vision_buff+49    ,(const void*)&Vision_Tx.controller_delay,4);
+//	memcpy(vision_buff+53    ,(const void*)&Vision_Tx.manual_reset_count,1);
+//	memcpy(vision_buff+54    ,(const void*)&Vision_Tx.detect_color,1);
+//	
+//	CDC_Transmit_FS(vision_buff,sizeof(vision_buff));//usb发送
+//}
 
 void send_vision()
 {
@@ -189,20 +236,93 @@ void send_vision()
 	memcpy(vision_buff+5    ,(const void*)&Vision_Tx.yaw,4);
 	memcpy(vision_buff+9    ,(const void*)&Vision_Tx.pitch,4);
 	memcpy(vision_buff+13    ,(const void*)&Vision_Tx.roll,4);
-	memcpy(vision_buff+17    ,(const void*)&Vision_Tx.ins_sum,4);
-	memcpy(vision_buff+21    ,(const void*)&Vision_Tx.yaw_vel,4);
-	memcpy(vision_buff+25    ,(const void*)&Vision_Tx.pitch_vel,4);
-	memcpy(vision_buff+29    ,(const void*)&Vision_Tx.roll_vel,4);
-	memcpy(vision_buff+33    ,(const void*)&Vision_Tx.v_x,4);
-	memcpy(vision_buff+37    ,(const void*)&Vision_Tx.v_y,4);
-	memcpy(vision_buff+41    ,(const void*)&Vision_Tx.v_z,4);
-	memcpy(vision_buff+45    ,(const void*)&Vision_Tx.bullet_speed,4);
-	memcpy(vision_buff+49    ,(const void*)&Vision_Tx.controller_delay,4);
-	memcpy(vision_buff+53    ,(const void*)&Vision_Tx.manual_reset_count,1);
-	memcpy(vision_buff+54    ,(const void*)&Vision_Tx.detect_color,1);
+	memcpy(vision_buff+17    ,(const void*)&Vision_Tx.yaw_vel,4);
+	memcpy(vision_buff+21    ,(const void*)&Vision_Tx.pitch_vel,4);
+	memcpy(vision_buff+25    ,(const void*)&Vision_Tx.roll_vel,4);
+	memcpy(vision_buff+29    ,(const void*)&Vision_Tx.v_x,4);
+	memcpy(vision_buff+33    ,(const void*)&Vision_Tx.v_y,4);
+	memcpy(vision_buff+37    ,(const void*)&Vision_Tx.v_z,4);
+	memcpy(vision_buff+41    ,(const void*)&Vision_Tx.bullet_speed,4);
+	memcpy(vision_buff+45    ,(const void*)&Vision_Tx.detect_color,1);
 	
 	CDC_Transmit_FS(vision_buff,sizeof(vision_buff));//usb发送
 }
+
+
+
+//void receive_vision(uint8_t *buff)
+//{
+//	vision_data_u32 time_stamp;
+//	vision_data_float yaw;
+//	vision_data_float pitch;
+//	vision_data_float target_yaw;
+//	vision_data_float target_pitch;
+//	vision_data_float enable_yaw_diff;
+//	vision_data_float enable_pitch_diff;
+//	vision_data_float yaw_vel;
+//	vision_data_float pitch_vel;
+//	vision_data_float yaw_acc;
+//	vision_data_float pitch_acc;
+//	if(buff[0]==0x01)
+//	{
+//		
+//		for(int i=0;i<4;i++)
+//		{
+//			time_stamp.data[i]=buff[i+1];
+//			yaw.data[i]=buff[i+11];
+//			pitch.data[i]=buff[i+7];
+//			target_yaw.data[i]=buff[i+15];
+//			target_pitch.data[i]=buff[i+19];
+//			enable_yaw_diff.data[i]=buff[i+23];
+//			enable_pitch_diff.data[i]=buff[i+27];
+//			yaw_vel.data[i]=buff[i+31];
+//			pitch_vel.data[i]=buff[i+35];
+//			yaw_acc.data[i]=buff[i+39];
+//			pitch_acc.data[i]=buff[i+43];
+//		}
+//		
+//		Vision_Rx.time_stamp=time_stamp.d;
+//		Vision_Rx.yaw=yaw.d;
+//		Vision_Rx.pitch=pitch.d;
+//		Vision_Rx.target_yaw=target_yaw.d;
+//		Vision_Rx.target_pitch=target_pitch.d;
+//		Vision_Rx.enable_yaw_diff=enable_yaw_diff.d;
+//		Vision_Rx.enable_pitch_diff=enable_pitch_diff.d;
+//		Vision_Rx.v_yaw=yaw_vel.d;
+//		Vision_Rx.v_pitch=pitch_vel.d;
+//		Vision_Rx.a_yaw=yaw_acc.d;
+//		Vision_Rx.a_pitch=pitch_acc.d;
+//		Vision_Rx.appear=buff[5];
+//		Vision_Rx.shoot_rate=buff[6];
+//		Vision_Rx.detect_color=buff[39];
+//		
+//		if(Vision_Rx.appear)
+//		{
+//			if(Vision_Rx.yaw>180.0f||Vision_Rx.yaw<-180.0f)
+//				GIMBAL.yaw_vision_target=INS.Yaw;
+//			else
+//				GIMBAL.yaw_vision_target=Vision_Rx.yaw;
+//			
+//			GIMBAL.pitch_vision_target=pitch_protect(Vision_Rx.pitch);
+//		}
+//		else
+//		{
+//			GIMBAL.yaw_vision_target=INS.Yaw;
+//			GIMBAL.pitch_vision_target=INS.Pitch;
+//		}
+//		
+//		if(GIMBAL.last_yaw_vision_target == Vision_Rx.yaw)
+//		  vision_cnt++;
+//		else
+//			vision_cnt=0;
+//		
+//		if(vision_cnt>500)
+//			GIMBAL.vision_block = 1;
+//		else
+//			GIMBAL.vision_block = 0;
+//		
+//	}
+//}
 
 void receive_vision(uint8_t *buff)
 {
@@ -235,6 +355,7 @@ void receive_vision(uint8_t *buff)
 			pitch_acc.data[i]=buff[i+43];
 		}
 		
+		
 		Vision_Rx.time_stamp=time_stamp.d;
 		Vision_Rx.yaw=yaw.d;
 		Vision_Rx.pitch=pitch.d;
@@ -257,7 +378,7 @@ void receive_vision(uint8_t *buff)
 			else
 				GIMBAL.yaw_vision_target=Vision_Rx.yaw;
 			
-			GIMBAL.pitch_vision_target=pitch_protect(Vision_Rx.pitch);
+			GIMBAL.pitch_vision_target=pitch_protect(-Vision_Rx.pitch);
 		}
 		else
 		{
@@ -278,6 +399,7 @@ void receive_vision(uint8_t *buff)
 	}
 }
 
+
 //是否识别到目标
 bool IF_DISCERN(void)
 {
@@ -291,7 +413,7 @@ bool IF_DISCERN(void)
 //是否开火
 bool IF_FIRE(void)
 {
-	if(fabs(INS.Yaw-Vision_Rx.yaw)<(Vision_Rx.enable_yaw_diff/1.5f)&&fabs(INS.Pitch-Vision_Rx.pitch)<Vision_Rx.enable_pitch_diff)//
+	if(fabs(INS.Yaw-Vision_Rx.yaw)<0.7f&&fabs(INS.Pitch+Vision_Rx.pitch)<0.5f)//(Vision_Rx.enable_yaw_diff/0.3f)Vision_Rx.enable_pitch_diff
 		return 1;
 	else
 		return 0;

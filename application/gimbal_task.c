@@ -169,7 +169,7 @@ void gimbal_pid_calc()
 		if (mode.controls_state == RC_ctrl)
 		{
 			PID_calc(&pid_pitch_angle, INS.Pitch, GIMBAL.pitch_target);
-			GIMBAL.output_pitch = PID_calc(&pid_pitch_speed, INS.Gyro[1], pid_pitch_angle.out) - 1.6f * arm_cos_f32(INS.Pitch / 180 * 3.14f); //-3.2-1.2f*cos(INS.Pitch)
+			GIMBAL.output_pitch = PID_calc(&pid_pitch_speed, INS.Gyro[1], pid_pitch_angle.out) +gravity_compensation(); //-3.2-1.2f*cos(INS.Pitch)
 
 			if (GIMBAL.IF_DT_OVER == 1)
 			{
@@ -187,7 +187,7 @@ void gimbal_pid_calc()
 		else // KEY_ctrl
 		{
 			PID_calc(&pid_pitch_angle, INS.Pitch, GIMBAL.lowpass_pitch_target);
-			GIMBAL.output_pitch = PID_calc(&pid_pitch_speed, INS.Gyro[1], pid_pitch_angle.out) - 1.6f * arm_cos_f32(INS.Pitch / 180 * 3.14f);
+			GIMBAL.output_pitch = PID_calc(&pid_pitch_speed, INS.Gyro[1], pid_pitch_angle.out) +gravity_compensation();
 
 			if (GIMBAL.IF_DT_OVER == 1)
 			{
@@ -215,8 +215,18 @@ void gimbal_pid_calc()
 		//						 PID_calc(&pid_pitch_angle, INS.Pitch, GIMBAL.pitch_target);
 		//             GIMBAL.output_pitch = PID_calc(&pid_pitch_speed, INS.Gyro[1], pid_pitch_angle.out);
 		//					}
-		PID_calc(&pid_pitch_angle, INS.Pitch, GIMBAL.lowpass_pitch_target);
+//		PID_calc(&pid_pitch_angle, INS.Pitch, GIMBAL.lowpass_pitch_target);
+//		GIMBAL.output_pitch = PID_calc(&pid_pitch_speed, INS.Gyro[1], pid_pitch_angle.out);
+	if(GIMBAL.down_over)
+	{
+		PID_calc(&pid_pitch_angle_fold, small_pitch.Angle, GIMBAL.pitch_target);
+		GIMBAL.output_pitch = PID_calc(&pid_pitch_speed_fold, INS.Gyro[1], pid_pitch_angle.out);
+	}
+	else
+	{
+		PID_calc(&pid_pitch_angle, INS.Pitch, GIMBAL.pitch_target);
 		GIMBAL.output_pitch = PID_calc(&pid_pitch_speed, INS.Gyro[1], pid_pitch_angle.out);
+	}
 		PID_calc(&pid_yaw_angle_pos, small_yaw._pos, GIMBAL.yaw_target);
 		GIMBAL.output_yaw = PID_calc(&pid_yaw_speed, INS.Gyro[2], pid_yaw_angle_pos.out);
 		break;
@@ -226,18 +236,20 @@ void gimbal_pid_calc()
 		{
 		case VISION_ARMOR:
 			PID_calc(&pid_pitch_vision_armor_angle, INS.Pitch, GIMBAL.pitch_target);																					// KalmanFilter(&kalman_pitch_armor,GIMBAL.pitch_target)
-			GIMBAL.output_pitch = PID_calc(&pid_pitch_vision_armor_speed, INS.Gyro[1], pid_pitch_vision_armor_angle.out) - 1.7f * arm_cos_f32(INS.Pitch / 180 * 3.14f); //
+			GIMBAL.output_pitch = PID_calc(&pid_pitch_vision_armor_speed, INS.Gyro[1], pid_pitch_vision_armor_angle.out) +gravity_compensation(); //
 
 			yaw_error = shortestAngleDiff(INS.Yaw, GIMBAL.yaw_target);
 			PID_calc(&pid_yaw_vision_armor_angle, 0, yaw_error);
-			GIMBAL.output_yaw = PID_calc(&pid_yaw_vision_armor_speed, INS.Gyro[2], pid_yaw_vision_armor_angle.out + feedforward_control_calc(&yaw_vision_forward, Vision_Rx.v_yaw)) + feedforward_control_calc(&yaw_vision_speed_forward, Vision_Rx.a_yaw); ////
+			GIMBAL.output_yaw = PID_calc(&pid_yaw_vision_armor_speed, INS.Gyro[2], pid_yaw_vision_armor_angle.out+ feedforward_control_calc(&yaw_vision_forward, Vision_Rx.v_yaw) )+ feedforward_control_calc(&yaw_vision_speed_forward, Vision_Rx.a_yaw);
+		//+ feedforward_control_calc(&yaw_vision_forward, Vision_Rx.v_yaw)
+		//+ feedforward_control_calc(&yaw_vision_speed_forward, Vision_Rx.a_yaw)
 																																																															//							Modeling_Parameters_yaw.target_vel=	PID_calc(&pid_yaw_angle_Recognition, 0, yaw_error);
 																																																															//							Modeling_Parameters_yaw.target_acc=PID_calc(&pid_yaw_speed_Recognition, INS.Gyro[2], pid_yaw_angle_Recognition.out);
 																																																															//							GIMBAL.output_yaw=Modeling_Parameters_cacl(Modeling_Parameters_yaw);
 			break;
 		case VISION_BIG_BUFF:
 			PID_calc(&pid_pitch_vision_buff_angle, INS.Pitch, GIMBAL.pitch_target);
-			GIMBAL.output_pitch = PID_calc(&pid_pitch_vision_buff_speed, INS.Gyro[1], pid_pitch_vision_buff_angle.out) - 1.6f * arm_cos_f32(INS.Pitch / 180 * 3.14f);
+			GIMBAL.output_pitch = PID_calc(&pid_pitch_vision_buff_speed, INS.Gyro[1], pid_pitch_vision_buff_angle.out) +gravity_compensation();
 
 			yaw_error = shortestAngleDiff(INS.Yaw, GIMBAL.yaw_target);
 			PID_calc(&pid_yaw_vision_buff_angle, 0, yaw_error);
@@ -246,7 +258,7 @@ void gimbal_pid_calc()
 			break;
 		case VISION_SMALL_BUFF:
 			PID_calc(&pid_pitch_vision_buff_angle, INS.Pitch, GIMBAL.pitch_target);
-			GIMBAL.output_pitch = PID_calc(&pid_pitch_vision_buff_speed, INS.Gyro[1], pid_pitch_vision_buff_angle.out) - 1.6f * arm_cos_f32(INS.Pitch / 180 * 3.14f);
+			GIMBAL.output_pitch = PID_calc(&pid_pitch_vision_buff_speed, INS.Gyro[1], pid_pitch_vision_buff_angle.out) +gravity_compensation();
 
 			yaw_error = shortestAngleDiff(INS.Yaw, GIMBAL.yaw_target);
 			PID_calc(&pid_yaw_vision_buff_angle, 0, yaw_error);
@@ -254,14 +266,14 @@ void gimbal_pid_calc()
 			break;
 		case VISION_CLOSE:
 			PID_calc(&pid_pitch_angle, INS.Pitch, GIMBAL.lowpass_pitch_target);
-			GIMBAL.output_pitch = PID_calc(&pid_pitch_speed, INS.Gyro[1], pid_pitch_angle.out) - 1.6f * arm_cos_f32(INS.Pitch / 180 * 3.14f);
+			GIMBAL.output_pitch = PID_calc(&pid_pitch_speed, INS.Gyro[1], pid_pitch_angle.out) +gravity_compensation();
 			yaw_error = shortestAngleDiff(INS.Yaw, GIMBAL.yaw_target);
 			PID_calc(&pid_yaw_angle, 0, yaw_error);
 			GIMBAL.output_yaw = PID_calc(&pid_yaw_speed, INS.Gyro[2], pid_yaw_angle.out);
 			break;
 		default:
 			PID_calc(&pid_pitch_angle, INS.Pitch, GIMBAL.lowpass_pitch_target);
-			GIMBAL.output_pitch = PID_calc(&pid_pitch_speed, INS.Gyro[1], pid_pitch_angle.out) - 1.6f * arm_cos_f32(INS.Pitch / 180 * 3.14f);
+			GIMBAL.output_pitch = PID_calc(&pid_pitch_speed, INS.Gyro[1], pid_pitch_angle.out) +gravity_compensation();
 			yaw_error = shortestAngleDiff(INS.Yaw, GIMBAL.yaw_target);
 			PID_calc(&pid_yaw_angle, 0, yaw_error);
 			GIMBAL.output_yaw = PID_calc(&pid_yaw_speed, INS.Gyro[2], pid_yaw_angle.out);
@@ -363,6 +375,7 @@ void gimbal_mode_rc_vision()
 	{
 		GIMBAL.yaw_target = INS.Yaw;
 		GIMBAL.target_renew_flag = 0;
+		GIMBAL.pitch_target = 0;
 	}
 
 	if (IF_DISCERN())
@@ -403,9 +416,15 @@ void gimbal_mode_rc_fold()
 		temp_pos+=6.283f;
 	
 	if (fabs(temp_pos) < 0.05f)
+	{
 		GIMBAL.big_pitch_target = FOLD_BIG_PITCH_ANGLE;
+	}
+		
 
-	GIMBAL.pitch_target = 0;
+	if(GIMBAL.down_over)
+		GIMBAL.pitch_target = FOLD_SMALL_PITCH_ANGLE;
+	else
+		GIMBAL.pitch_target = 0;
 }
 
 /**********************************键鼠控制云台***********************************/
@@ -456,8 +475,9 @@ void gimbal_mode_key_normal()
 
 	turn_round();
 	if (GIMBAL.angle_limit_flag == 0 &&GIMBAL.IF_DT == 0 && GIMBAL.IF_DT_OVER == 1) // 掉头未触发并且没超限位
-		GIMBAL.yaw_target -= rc_ctrl.mouse.vx * SENSITIVITY_YAW_MOUSE;
-	
+		GIMBAL.yaw_target -= mouse_limit(rc_ctrl.mouse.vx) * SENSITIVITY_YAW_MOUSE;
+	if(GIMBAL.angle_limit_flag == 1 &&GIMBAL.IF_DT == 0 && GIMBAL.IF_DT_OVER == 1) // 掉头未触发并且没超限位
+		GIMBAL.yaw_target -= mouse_limit(rc_ctrl.mouse.vx) * SENSITIVITY_YAW_MOUSE/3;
 	
 	GIMBAL.yaw_target = zero_180(GIMBAL.yaw_target);
 	GIMBAL.lowpass_yaw_target = first_order_filter_cali(&yaw_lowpass_key, GIMBAL.yaw_target);
@@ -466,7 +486,7 @@ void gimbal_mode_key_normal()
 
 	// if (GIMBAL.PT_flag == 0)
 	// {
-	GIMBAL.pitch_target -= rc_ctrl.mouse.vy * SENSITIVITY_PITCH_MOUSE;
+	GIMBAL.pitch_target -= mouse_limit(rc_ctrl.mouse.vy) * SENSITIVITY_PITCH_MOUSE;
 	// }
 	// else
 	// {
@@ -498,6 +518,7 @@ void gimbal_mode_key_vision()
 	{
 		GIMBAL.yaw_target = INS.Yaw;
 		GIMBAL.target_renew_flag = 0;
+		GIMBAL.pitch_target = 0;
 	}
 
 	if (IF_DISCERN())
@@ -514,14 +535,14 @@ void gimbal_mode_key_vision()
 		}
 		else
 		{
-			GIMBAL.yaw_target -= rc_ctrl.mouse.vx * SENSITIVITY_YAW_MOUSE;
-			GIMBAL.pitch_target -= rc_ctrl.mouse.vy * SENSITIVITY_PITCH_MOUSE;
+			GIMBAL.yaw_target -= mouse_limit(rc_ctrl.mouse.vx) * SENSITIVITY_YAW_MOUSE;
+			GIMBAL.pitch_target -= mouse_limit(rc_ctrl.mouse.vy) * SENSITIVITY_PITCH_MOUSE;
 		}
 	}
 	else
 	{
-		GIMBAL.yaw_target -= rc_ctrl.mouse.vx * SENSITIVITY_YAW_MOUSE;
-		GIMBAL.pitch_target -= rc_ctrl.mouse.vy * SENSITIVITY_PITCH_MOUSE;
+		GIMBAL.yaw_target -= mouse_limit(rc_ctrl.mouse.vx) * SENSITIVITY_YAW_MOUSE;
+		GIMBAL.pitch_target -= mouse_limit(rc_ctrl.mouse.vy) * SENSITIVITY_PITCH_MOUSE;
 	}
 
 	GIMBAL.big_pitch_target = NORMAL_BIG_PITCH_ANGLE; // 固定角度
@@ -545,7 +566,10 @@ void gimbal_mode_key_fold()
 
 	//	if(fabs(big_pitch._pos-FOLD_BIG_PITCH_ANGLE)<0.03f)
 	//		GIMBAL.pitch_target=FOLD_SMALL_PITCH_ANGLE;
-	GIMBAL.pitch_target = 0;
+	if(GIMBAL.down_over)
+		GIMBAL.pitch_target = FOLD_SMALL_PITCH_ANGLE;
+	else
+		GIMBAL.pitch_target = 0;
 	turn_round();
 }
 
@@ -732,15 +756,26 @@ void fold_state_judge()
  */
 void yaw_limit()
 {
+	static float temp_now_limit_pos=0;
 	static float temp_now_limit_angle=0;
-
-	temp_now_limit_angle=small_yaw._pos - FOLD_SMALL_YAW_ANGLE;
-	if(temp_now_limit_angle>3.14f)
-		temp_now_limit_angle-=6.28f;
-	else if(temp_now_limit_angle<-3.14f)
-		temp_now_limit_angle+=6.28f;
 	
-	if (fabs(temp_now_limit_angle) > YAW_LIMIT_ANGLE)
+	temp_now_limit_pos=small_yaw._pos - FOLD_SMALL_YAW_ANGLE;
+	temp_now_limit_angle=GIMBAL.yaw_target-INS.Yaw;
+	
+	if(temp_now_limit_pos>3.14f)
+		temp_now_limit_pos-=6.28f;
+	else if(temp_now_limit_pos<-3.14f)
+		temp_now_limit_pos+=6.28f;
+	
+	
+	
+	if(temp_now_limit_angle>180.0f)
+		temp_now_limit_angle-=360.0f;
+	else if(temp_now_limit_angle<-180.0f)
+		temp_now_limit_angle+=360.0f;
+	
+		
+	if (fabs(temp_now_limit_pos) > YAW_LIMIT_ANGLE||fabs(temp_now_limit_angle)>40.0f)//
 		GIMBAL.angle_limit_flag = 1;
 	else
 		GIMBAL.angle_limit_flag = 0;
@@ -764,5 +799,24 @@ bool_t small_yaw_offline_protect()
 		return 1;
 	else
 		return 0;
+}
+
+short mouse_limit(short a)
+{
+	if(a>MOUSE_MAX)
+		a=MOUSE_MAX;
+	else if(a<-MOUSE_MAX)
+		a=-MOUSE_MAX;
+	
+	return a;
+}
+/**
+ * @brief 重力补偿
+ * @note  small_pitch
+ * @param
+ */
+float gravity_compensation()
+{
+    return -1.9f * arm_cos_f32(INS.Pitch / 180 * PI);
 }
 

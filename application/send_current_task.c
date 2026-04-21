@@ -41,6 +41,7 @@ void send_current_task(void const * argument)
 			#else
 					Error_Shoot();
 			#endif
+			
 		}
 		else
 		{
@@ -92,7 +93,7 @@ void pitch_ctrl_current()
 
 	if (mode.gimbal_state != GIMBAL_IDLE)
 	{
-		ctrl_motor(&hcan1, 0x04, 0, 0, 0, 0,  GIMBAL.output_pitch);//
+		ctrl_motor(&hcan1, 0x04, 0, 0, 0, 0, GIMBAL.output_pitch );//
 			DM_position_ctrl(&hcan1,0x103,GIMBAL.big_pitch_target,10);
 	}		
 	else
@@ -124,10 +125,12 @@ void Error_Pitch()
  */
 void shoot_ctrl_current()
 {
-	if(mode.trigger_state==TRIGGER_IDLE&&stuck_state==STUCK_NORMAL)
-		set_motor_current(&hcan2, 0x1ff,0, SHOOT.output[0], SHOOT.output[1], 0);
-	else
-		set_motor_current(&hcan2, 0x1ff,TRIGGER.output, SHOOT.output[0], SHOOT.output[1], 0);
+	
+		if(toe_offline[0].communication_state == COMMUNICATION_NORMAL)
+			set_motor_current(&hcan2, 0x1ff,TRIGGER.pid_trigger_out, SHOOT.output[0], SHOOT.output[1], 0);//TRIGGER.output
+		else
+			set_motor_current(&hcan2, 0x1ff,0, SHOOT.output[0], SHOOT.output[1], 0);	
+		
 }
 /**
  * @brief Ä¦²ÁÂÖ²¦µ¯ÅÌ´íÎóµçÁ÷·¢ËÍ

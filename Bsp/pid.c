@@ -1,6 +1,8 @@
 #include <main.h>
 #include "pid.h"
 #include "string.h"
+#include "math.h"
+#include "user_lib.h"
 //#define LimitMax(input,max)  \
 //{                            \
 //	if(input>max)              \
@@ -15,13 +17,13 @@
 
 //typedef struct 
 //{
-//	uint8_t mode;//0为位置式，1为增量式//PID三参数
+//	uint8_t mode;//0为位�?式，1为�?�量�?//PID三参�?
 //	float Kp;
 //	float Ki;
 //	float Kd; 
 //	
-//	float max_out;//最大输出
-//	float max_iout;//最大积分输出
+//	float max_out;//最大输�?
+//	float max_iout;//最大积分输�?
 //	
 //	float set; 
 //	float ref; 
@@ -30,7 +32,7 @@
 //	float Pout;
 //	float Iout;
 //	float Dout; 
-//	float error[3];//误差项0最新1上一次2上上次pid_type_def
+//	float error[3];//�?�?�?0最�?1上一�?2上上�?pid_type_def
 //}pid_type_def;
 
 

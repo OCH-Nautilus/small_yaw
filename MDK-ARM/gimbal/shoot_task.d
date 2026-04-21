@@ -20,6 +20,7 @@ gimbal\shoot_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_gr
 gimbal\shoot_task.o: ../Bsp/pid.h
 gimbal\shoot_task.o: ../config/config.h
 gimbal\shoot_task.o: ..\application\mode_task.h
+gimbal\shoot_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\shoot_task.o: ../Bsp/CAN_receive.h
 gimbal\shoot_task.o: ../Inc/can.h
 gimbal\shoot_task.o: ../Inc/main.h
@@ -64,3 +65,4 @@ gimbal\shoot_task.o: ../Inc/usart.h
 gimbal\shoot_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 gimbal\shoot_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 gimbal\shoot_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+gimbal\shoot_task.o: ../Bsp/SMC.h

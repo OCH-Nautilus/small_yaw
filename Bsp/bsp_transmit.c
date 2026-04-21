@@ -114,8 +114,14 @@ void USART_Data_Handle(USART_TX_data_t *data)
 		//设置标志位
 		data->flag.bits.IF_DISCERN=IF_DISCERN();
 		data->flag.bits.shoot_l=shoot_l_detect();
+		
 		data->flag.bits.shoot_r=shoot_r_detect();
-		data->flag.bits.stuck_state=stuck_state;
+		
+		if(mode.trigger_state!=TRIGGER_BACK)
+			data->flag.bits.stuck_state=0;
+		else
+			data->flag.bits.stuck_state=1;
+		
 		data->flag.bits.down_over_flag=GIMBAL.down_over;
 		data->flag.bits.rotate_direction=Rotate_direction;
 		data->flag.bits.top_mode=top_mode;

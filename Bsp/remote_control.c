@@ -340,27 +340,69 @@ void WHEEL_STATE_Ctrl(void)
  * @brief 鼠标左键状态辨识
  * @param 
  */
+//int KEY_LEFT_TIME;
+//int KEY_LAST;
+//void KEY_STATE_Ctrl(void)
+//{
+//	if ( rc_ctrl.mouse.press_l == 1 )
+//	{
+//		KEY_LEFT_TIME ++;
+//	}
+//	else
+//	{
+//		KEY_LEFT_TIME = 0;
+//		rc_ctrl.mouse .KEY_L_State = NOP;
+//	}
+//	
+//	//松开时进行判断SHORT or LONG
+//	if ( rc_ctrl.mouse.press_l==1 && KEY_LEFT_TIME<20 )
+//		rc_ctrl.mouse .KEY_L_State  = PUSH_SHORT;
+//	else if( rc_ctrl.mouse.press_l==1 && KEY_LEFT_TIME>=20 )
+//		rc_ctrl.mouse .KEY_L_State = PUSH_LONG;
+//	
+//	KEY_LAST = rc_ctrl.mouse.press_l;
+//}
+
 int KEY_LEFT_TIME;
 int KEY_LAST;
+
 void KEY_STATE_Ctrl(void)
 {
-	if ( rc_ctrl.mouse.press_l == 1 )
-	{
-		KEY_LEFT_TIME ++;
-	}
-	else
-	{
-		KEY_LEFT_TIME = 0;
-		rc_ctrl.mouse .KEY_L_State = NOP;
-	}
-	
-	//松开时进行判断SHORT or LONG
-	if ( rc_ctrl.mouse.press_l==1 && KEY_LEFT_TIME<20 )
-		rc_ctrl.mouse .KEY_L_State  = PUSH_SHORT;
-	else if( rc_ctrl.mouse.press_l==1 && KEY_LEFT_TIME>=20 )
-		rc_ctrl.mouse .KEY_L_State = PUSH_LONG;
-	
-	KEY_LAST = rc_ctrl.mouse.press_l;
+    static uint8_t key_short_cnt = 0;   // ??短按保持计数器
+
+    // 默认无动作
+    rc_ctrl.mouse.KEY_L_State = NOP;
+
+    // 按下
+    if (rc_ctrl.mouse.press_l == 1)
+    {
+        KEY_LEFT_TIME++;
+
+        // 长按
+        if (KEY_LEFT_TIME >= 10)
+        {
+            rc_ctrl.mouse.KEY_L_State = PUSH_LONG;
+        }
+    }
+    else
+    {
+        // 松开瞬间判断短按
+        if (KEY_LAST == 1 && KEY_LEFT_TIME < 10)
+        {
+            key_short_cnt = 3;   // ??保持3帧（你可以改成5更稳）
+        }
+
+        KEY_LEFT_TIME = 0;
+    }
+
+    // ?? 短按保持输出
+    if (key_short_cnt > 0)
+    {
+        rc_ctrl.mouse.KEY_L_State = PUSH_SHORT;
+        key_short_cnt--;
+    }
+
+    KEY_LAST = rc_ctrl.mouse.press_l;
 }
 
 /*遥控器参数初始化*/

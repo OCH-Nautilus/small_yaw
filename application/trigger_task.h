@@ -1,40 +1,41 @@
 #include "struct_typedef.h"
+#include "stdbool.h"
+#include "mode_task.h"
 
 typedef struct
 {
-	int16_t err_cnt;//正转时卡弹计时
-	int16_t err_back_cnt;// 反转时卡弹计时
-	uint16_t if_back_flag;//触发反转标志位
-	uint16_t back_over_flag;//反转完成标志位
-	uint16_t back_target_set_flag;// 反转目标角度是否已设置
-	uint16_t once_first_flag;//单发目标角是否设置
-	int32_t once_target_ecd;   // 单发及反转目标角
-	uint16_t once_over_flag;//单发完成标志位
-	int16_t conti_speed;//连发速度
-	uint16_t weak_flag;//热量限制标志位
-	uint16_t vision_weak_flag;//视觉状态下允许发弹标志位
-	int16_t output;//目标电流
+	bool vision_fire;
+	bool flag_if_single;
+	bool flag_if_single_over;
+	bool flag_if_back;
+	bool flag_if_back_over;
+	bool flag_if_flug[3];//0正拨,1反拨,2校准堵转
+	bool flag_shoot_heat_warning; 
+	bool if_cal;     //是否校准
+	bool cal_step[2]; //校准的两个阶段 0为反转,1为偏移量控制
+	
+	float initial_ecd;        //校准后初始值
+	float ecd; 
+	float ecd_total;
+	float v_trigger;
+	float limit_v;
+  	float tire_retreat_current;      //正转堵转计数
+	float tire_retreat_current_back; //反转堵住计数
+	float tire_retreat_current_cal;  //校准堵转计数
+	float pid_trigger_single_out;
+	float pid_trigger_long_out;
+	float pid_trigger_out;
+	trigger_state_t  last_trigger_mode;
+	float cal_protect_start_time;
+	float cal_protect_now_time;
 }trigger_t;
 
-typedef enum
-{
-	STUCK_ERR=0,
-	STUCK_NORMAL=1,
 
-}stuck_t;
 
 void trigger_init(void);
+void trigger_heat(void);
+void trigger_retreat(void);
+void trigger_mode(void);
 void trigger_pid_calc(void);
-void once_shoot(void);
-void continuous_shoot(void);
-void driver_idle_stop(void);
-void trigger_back(void);
-void back_stick(void);
-void stick_judge(void);
-float floatabs(float a);
-void trigger_state_judge(void);
-extern stuck_t stuck_state;
-
-void trigger_heat(void);//热量限制
 
 extern trigger_t TRIGGER;

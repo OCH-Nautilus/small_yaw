@@ -1,5 +1,8 @@
-#include "struct_typedef.h"
+#ifndef MODE_TASK_H
+#define MODE_TASK_H
 
+#include "struct_typedef.h"
+#include "stdbool.h"
 typedef enum
 {
 	RC_ctrl=0,
@@ -35,10 +38,13 @@ typedef enum
 typedef enum
 {
 	TRIGGER_IDLE = 0,
-	TRIGGER_SINGLE = 1,
-	TRIGGER_LONG = 2,
-	TRIGGER_BACK = 3,
+	TRIGGER_SINGLE,
+	TRIGGER_LONG,
+	TRIGGER_STATIC,
+	TRIGGER_BACK,
+	TRIGGER_CAL,
 }trigger_state_t;//²¦µ¯ÅÌÄ£Ê½
+
 
 
 typedef enum
@@ -80,11 +86,16 @@ void shoot_pc_ctrl(void);
 void chassis_speed(void);
 void vision_rc_ctrl(void);
 void vision_pc_ctrl(void);
-void tirgger_rc_ctrl(void);
-void tirgger_pc_ctrl(void);
+void trigger_rc_ctrl(void);
+void trigger_pc_ctrl(void);
 void Vision_to_Normal_init(void);
 void Normal_to_Vision_init(void);
 bool_t CHASSIS_LIMIT(void);
+void chassis_speed(void);
+bool if_trigger_cal(void);
+void tirgger_mode_task(void);    
 
 extern mode_t mode;
+
+#endif
 

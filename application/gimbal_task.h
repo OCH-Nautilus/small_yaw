@@ -81,6 +81,8 @@ bool_t small_yaw_offline_protect(void);
 
 void yaw_limit(void);
 float zero_PI(float angle);
+short mouse_limit(short a);
+float gravity_compensation(void);
 
 
 extern GIMBAL_t GIMBAL;

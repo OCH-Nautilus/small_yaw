@@ -54,6 +54,7 @@ gimbal\vofa.o: ../Inc/usart.h
 gimbal\vofa.o: ..\application\gimbal_task.h
 gimbal\vofa.o: ../Bsp/pid.h
 gimbal\vofa.o: ..\application\mode_task.h
+gimbal\vofa.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\vofa.o: ../Bsp/CAN_receive.h
 gimbal\vofa.o: ../Inc/can.h
 gimbal\vofa.o: ../Components/ins_task.h
@@ -67,9 +68,9 @@ gimbal\vofa.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 gimbal\vofa.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 gimbal\vofa.o: ../Components/ins_task.h
 gimbal\vofa.o: ..\application\vision.h
-gimbal\vofa.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\vofa.o: ..\application\trigger_task.h
 gimbal\vofa.o: ../Bsp/bsp_transmit.h
 gimbal\vofa.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 gimbal\vofa.o: ../Bsp/remote_control.h
 gimbal\vofa.o: ../Bsp/bsp_rc.h
+gimbal\vofa.o: ..\application\shoot_task.h

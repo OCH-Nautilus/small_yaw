@@ -71,6 +71,7 @@
 "gimbal\pid.o"
 "gimbal\remote_control.o"
 "gimbal\crc8_crc16.o"
+"gimbal\smc.o"
 "gimbal\config.o"
 "gimbal\usbd_core.o"
 "gimbal\usbd_ctlreq.o"

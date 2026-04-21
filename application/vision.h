@@ -55,51 +55,89 @@ typedef struct
 }VisionToGimbal_t;
 
 typedef struct  {
-    uint8_t cmd_ID;           // 命令码 ID_AIM_INFO = 0x02
-    uint32_t time_stamp;      // 时间戳
-    
-    float yaw;                // 云台yaw角 (rad)
-    float pitch;              // 云台pitch角 (rad)
-    float roll;               // roll角 (rad)
-    float ins_sum;            
-    
-    float yaw_vel;            // yaw角速度 (rad/s)
-    float pitch_vel;          // pitch角速度 (rad/s)
-    float roll_vel;           // roll角速度 (rad/s)
-    
-    float v_x;                // 机器人x速度
-    float v_y;                // 机器人y速度
-    float v_z;                // 机器人z速度
-    
-    float bullet_speed;       // 弹速 (m/s)
-    float controller_delay;   // 控制器延迟 (s)
-    
-    uint8_t manual_reset_count;
-    uint8_t detect_color;     // 敌方颜色 0=红 1=蓝
+//    uint8_t cmd_ID;           // 命令码 ID_AIM_INFO = 0x02
+//    uint32_t time_stamp;      // 时间戳
+//    
+//    float yaw;                // 云台yaw角 (rad)
+//    float pitch;              // 云台pitch角 (rad)
+//    float roll;               // roll角 (rad)
+//    float ins_sum;            
+//    
+//    float yaw_vel;            // yaw角速度 (rad/s)
+//    float pitch_vel;          // pitch角速度 (rad/s)
+//    float roll_vel;           // roll角速度 (rad/s)
+//    
+//    float v_x;                // 机器人x速度
+//    float v_y;                // 机器人y速度
+//    float v_z;                // 机器人z速度
+//    
+//    float bullet_speed;       // 弹速 (m/s)
+//    float controller_delay;   // 控制器延迟 (s)
+//    
+//    uint8_t manual_reset_count;
+//    uint8_t detect_color;     // 敌方颜色 0=红 1=蓝
+    uint8_t cmd_ID;
+    uint32_t time_stamp;
+
+    float yaw;
+    float pitch;
+    float roll;
+
+    float yaw_vel;
+    float pitch_vel;
+    float roll_vel;
+
+    float v_x;
+    float v_y;
+    float v_z;
+
+    float bullet_speed;
+    uint8_t detect_color; // 0 red 1 blue
 } __attribute__((packed)) SendRobotCmdData ;//发送给视觉的
 
 
 typedef struct  {
-    uint8_t cmd_ID;            // 命令码 ID_ROBOT_CMD = 0x01
+//    uint8_t cmd_ID;            // 命令码 ID_ROBOT_CMD = 0x01
+//    uint32_t time_stamp;
+//    uint8_t appear;            // 是否发现目标
+//    uint8_t shoot_rate;        // 射频
+//    
+//    float pitch;               // 最佳控制pitch (度)
+//    float yaw;                 // 最佳控制yaw (度)
+//    
+//    float target_yaw;          // 最佳击中yaw (度)
+//    float target_pitch;        // 最佳击中pitch (度)
+//    
+//    float enable_yaw_diff;     // 允许开火的yaw误差 (度)
+//    float enable_pitch_diff;   // 允许开火的pitch误差 (度)
+//    
+//    float v_yaw;               // yaw角速度
+//    float v_pitch;             // pitch角速度
+//	
+//		float a_yaw;   // yaw 方向角加速度（度/s^2），发给电控
+//    float a_pitch; // pitch 方向角加速度（度/s^2），发给电控
+//    uint8_t detect_color;      // 敌方颜色
+	uint8_t cmd_ID;
     uint32_t time_stamp;
-    uint8_t appear;            // 是否发现目标
-    uint8_t shoot_rate;        // 射频
-    
-    float pitch;               // 最佳控制pitch (度)
-    float yaw;                 // 最佳控制yaw (度)
-    
-    float target_yaw;          // 最佳击中yaw (度)
-    float target_pitch;        // 最佳击中pitch (度)
-    
-    float enable_yaw_diff;     // 允许开火的yaw误差 (度)
-    float enable_pitch_diff;   // 允许开火的pitch误差 (度)
-    
-    float v_yaw;               // yaw角速度
-    float v_pitch;             // pitch角速度
-	
-		float a_yaw;   // yaw 方向角加速度（度/s^2），发给电控
-    float a_pitch; // pitch 方向角加速度（度/s^2），发给电控
-    uint8_t detect_color;      // 敌方颜色
+
+    uint8_t appear;
+    uint8_t shoot_rate ;
+
+    float pitch;
+    float yaw;
+
+    float target_yaw;
+    float target_pitch;
+
+    float enable_yaw_diff;
+    float enable_pitch_diff;
+
+    float v_yaw;
+    float v_pitch;
+    float a_yaw;
+    float a_pitch;
+
+    uint8_t detect_color;
 } __attribute__((packed)) ReceiveAimINFO;//视觉发送过来的
 
 void vision_rx(uint8_t *buff);

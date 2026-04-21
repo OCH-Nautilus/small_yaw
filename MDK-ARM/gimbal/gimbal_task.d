@@ -19,6 +19,7 @@ gimbal\gimbal_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 gimbal\gimbal_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 gimbal\gimbal_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 gimbal\gimbal_task.o: ..\application\mode_task.h
+gimbal\gimbal_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\gimbal_task.o: ../config/config.h
 gimbal\gimbal_task.o: ../Bsp/remote_control.h
 gimbal\gimbal_task.o: ../Bsp/bsp_rc.h
@@ -59,7 +60,6 @@ gimbal\gimbal_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 gimbal\gimbal_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 gimbal\gimbal_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 gimbal\gimbal_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
-gimbal\gimbal_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\gimbal_task.o: ../Components/ins_task.h
 gimbal\gimbal_task.o: ../Components/Devices/BMI088driver.h
 gimbal\gimbal_task.o: ../Components/Algorithm/QuaternionEKF.h

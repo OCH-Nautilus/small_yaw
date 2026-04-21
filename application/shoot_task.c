@@ -7,10 +7,13 @@
 #include "bsp_transmit.h"
 #include "string.h"
 #include "math.h"
+#include "SMC.h" 
 
 shoot_t SHOOT;
 pid_type_def pid_frictiongear_l;
 pid_type_def pid_frictiongear_r;
+Vel_SMC_struct_t  Vel_SMC_left_shoot;
+Vel_SMC_struct_t  Vel_SMC_right_shoot;
 
 void shoot_task(void const * argument)
 {
@@ -19,7 +22,7 @@ void shoot_task(void const * argument)
     for(;;)
     {
         temp_shoot();
-			shoot_speed_adjust();
+		shoot_speed_adjust();
         frictiongear_calc();
 				
         vTaskDelay(1);
@@ -34,6 +37,31 @@ void shoot_init()
     PID_init(&pid_frictiongear_l,PID_FRICTIONGEAR_LEFT_MODE,PID_FRICTIONGEAR_LEFT_KP,PID_FRICTIONGEAR_LEFT_KI,PID_FRICTIONGEAR_LEFT_KD,PID_FRICTIONGEAR_LEFT_MAXIOUT,PID_FRICTIONGEAR_LEFT_MAXOUT);
     PID_init(&pid_frictiongear_r,PID_FRICTIONGEAR_RIGHT_MODE,PID_FRICTIONGEAR_RIGHT_KP,PID_FRICTIONGEAR_RIGHT_KI,PID_FRICTIONGEAR_RIGHT_KD,PID_FRICTIONGEAR_RIGHT_MAXIOUT,PID_FRICTIONGEAR_RIGHT_MAXOUT);
    
+	     Vel_SMC_init(&Vel_SMC_left_shoot, 
+                                150,//float A,     
+                                0.7f,//float Y1, 
+                                3800,//float K1, 
+                                10,//float K2, 
+                                120,//float phi, 
+                                0.3f,//float u_max,
+                                50.0f,//float error_eps, 
+                                0.0000222f,//float J, 
+                                0.001f,//float dt, 
+                                0.0000001,//float i, 
+                                0.00);//float i_max                        
+
+   Vel_SMC_init(&Vel_SMC_right_shoot, 
+                                150,//float A,     
+                                0.7f,//float Y1, 
+                                3800,//float K1, 
+                                10,//float K2, 
+                                100,//float phi, 
+                                0.3f,//float u_max,
+                                50.0f,//float error_eps, 
+                                0.0000222f,//float J, 
+                                0.001f,//float dt, 
+                                0.0000001,//float i, 
+                                0.00);//float i_max
 }
 
 
@@ -44,7 +72,7 @@ void frictiongear_calc()
 {
 
     if(mode.shoot_state==SHOOT_OPEN)
-        SHOOT.frictiongear_speed=7000;
+        SHOOT.frictiongear_speed=6600;
     else
         SHOOT.frictiongear_speed=0;
 		
@@ -53,8 +81,11 @@ void frictiongear_calc()
 		else
 			SHOOT.shoot_target_speed=0;
 		
-    SHOOT.output[0]=PID_calc(&pid_frictiongear_l,frictiongear_l.speed_rpm,-SHOOT.shoot_target_speed);//l
-    SHOOT.output[1]=PID_calc(&pid_frictiongear_r,frictiongear_r.speed_rpm,SHOOT.shoot_target_speed);//r
+    // SHOOT.output[0]=PID_calc(&pid_frictiongear_l,frictiongear_l.speed_rpm,-SHOOT.shoot_target_speed);//l
+    // SHOOT.output[1]=PID_calc(&pid_frictiongear_r,frictiongear_r.speed_rpm,SHOOT.shoot_target_speed);//r
+
+	SHOOT.output[0] = Vel_SMC_calc(&Vel_SMC_left_shoot, frictiongear_l.speed_rpm*0.10472f, -SHOOT.shoot_target_speed*0.10472f)*52445.58f;
+    SHOOT.output[1] = Vel_SMC_calc(&Vel_SMC_right_shoot,frictiongear_r.speed_rpm*0.10472f, SHOOT.shoot_target_speed*0.10472f)*52445.58f;
 }
 
 /**

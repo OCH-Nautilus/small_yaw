@@ -1,6 +1,7 @@
 gimbal\mode_task.o: ..\application\mode_task.c
 gimbal\mode_task.o: ..\application\mode_task.h
 gimbal\mode_task.o: ../Bsp/struct_typedef.h
+gimbal\mode_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\mode_task.o: ../config/config.h
 gimbal\mode_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 gimbal\mode_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
@@ -57,7 +58,6 @@ gimbal\mode_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 gimbal\mode_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 gimbal\mode_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 gimbal\mode_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
-gimbal\mode_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\mode_task.o: ../Bsp/detect.h
 gimbal\mode_task.o: ..\application\gimbal_task.h
 gimbal\mode_task.o: ../Bsp/pid.h
